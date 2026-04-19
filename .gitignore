@@ -23,12 +23,13 @@ dist-ssr
 *.sln
 *.sw?
 
-# Root-level source/reference files
-EBOOK 7 DIAS (1).pdf
-Capa-ebook.jpeg
-cartas-fundo.jpeg
-foto-de-perfil.png
-flora_brand_guide (1).html
+# Root-level source/reference files (/ prefix = root only)
+/EBOOK 7 DIAS (1).pdf
+/Capa-ebook.jpeg
+/cartas-fundo.jpeg
+/foto-de-perfil.png
+/flora_brand_guide (1).html
+/Designsystem_ebook
 
 # AI/Editor tools
 .gemini/
