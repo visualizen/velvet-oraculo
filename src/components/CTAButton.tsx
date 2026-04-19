@@ -1,0 +1,28 @@
+import { useState } from "react";
+import CheckoutModal from "./CheckoutModal";
+
+interface CTAButtonProps {
+  text?: string;
+  className?: string;
+}
+
+const CTAButton = ({ text = "QUERO ENTRAR NO PORTAL", className = "" }: CTAButtonProps) => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  return (
+    <>
+      <button
+        onClick={() => setIsModalOpen(true)}
+        className={`inline-block font-display tracking-[0.2em] text-sm md:text-base font-bold px-10 py-4 bg-primary text-primary-foreground rounded-sm border border-primary/50 hover:bg-primary/90 transition-all duration-300 animate-cta-glow [text-shadow:none] cursor-pointer ${className}`}
+      >
+        {text}
+      </button>
+      <CheckoutModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+      />
+    </>
+  );
+};
+
+export default CTAButton;

@@ -1,0 +1,250 @@
+@import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Cinzel:wght@400;500;600;700&family=Italianno&family=Pinyon+Script&family=IM+Fell+English:ital@0;1&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=Inter:wght@300;400;500;600&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 30 30% 10%;
+    --foreground: 39 45% 92%;
+
+    --card: 30 30% 10%;
+    --card-foreground: 39 45% 92%;
+
+    --popover: 30 30% 10%;
+    --popover-foreground: 39 45% 92%;
+
+    --primary: 39 40% 60%;
+    --primary-foreground: 30 30% 10%;
+
+    --secondary: 350 55% 30%;
+    --secondary-foreground: 39 45% 92%;
+
+    --muted: 350 20% 20%;
+    --muted-foreground: 39 20% 65%;
+
+    --accent: 350 55% 30%;
+    --accent-foreground: 39 45% 92%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 39 30% 50%;
+    --input: 350 20% 25%;
+    --ring: 39 40% 60%;
+
+    --radius: 0.5rem;
+
+    /* Flora brand colors */
+    --flora-veludo: 30 30% 10%;
+    --flora-borgonha: 350 55% 30%;
+    --flora-carmim: 350 50% 40%;
+    --flora-ouro: 39 40% 60%;
+    --flora-pergaminho: 39 45% 92%;
+    --flora-creme: 37 40% 86%;
+    --flora-areia: 30 35% 71%;
+    --flora-rosa: 18 30% 63%;
+
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 240 5.3% 26.1%;
+    --sidebar-primary: 240 5.9% 10%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 240 4.8% 95.9%;
+    --sidebar-accent-foreground: 240 5.9% 10%;
+    --sidebar-border: 220 13% 91%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-family: 'Cormorant Garamond', serif;
+  }
+}
+
+@layer utilities {
+  .font-display {
+    font-family: 'Cinzel Decorative', serif;
+  }
+
+  .font-script {
+    font-family: 'Pinyon Script', cursive;
+  }
+
+  .font-editorial {
+    font-family: 'IM Fell English', serif;
+  }
+
+  .font-body {
+    font-family: 'Cormorant Garamond', serif;
+  }
+
+  .font-italianno {
+    font-family: 'Italianno', cursive;
+  }
+
+  .font-cinzel {
+    font-family: 'Cinzel', serif;
+  }
+
+  .font-readable {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  }
+
+  @keyframes floatTablet {
+    0%, 100% { transform: translateY(0px) rotate(-2deg); }
+    50% { transform: translateY(-14px) rotate(-1.5deg); }
+  }
+
+  @keyframes floatPhone {
+    0%, 100% { transform: translateY(0px) rotate(3deg); }
+    50% { transform: translateY(-18px) rotate(4deg); }
+  }
+
+  @keyframes mockupGlow {
+    0%, 100% { opacity: 0.4; filter: blur(60px); }
+    50% { opacity: 0.7; filter: blur(80px); }
+  }
+
+  @keyframes sparkle {
+    0%, 100% { opacity: 0; transform: scale(0); }
+    50% { opacity: 1; transform: scale(1); }
+  }
+
+  .animate-float-tablet {
+    animation: floatTablet 6s ease-in-out infinite;
+  }
+
+  .animate-float-phone {
+    animation: floatPhone 5s ease-in-out infinite;
+    animation-delay: 1s;
+  }
+
+  .animate-mockup-glow {
+    animation: mockupGlow 4s ease-in-out infinite;
+  }
+
+  .animate-sparkle {
+    animation: sparkle 3s ease-in-out infinite;
+  }
+
+  .texture-overlay {
+    position: relative;
+  }
+
+  .texture-overlay::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  .section-texture {
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+  }
+
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .animate-fade-in-up {
+    animation: fadeInUp 0.8s ease-out forwards;
+    opacity: 0;
+  }
+
+  @keyframes ctaGlow {
+    0%, 100% {
+      box-shadow: 0 0 15px hsl(39 40% 60% / 0.3), 0 0 30px hsl(39 40% 60% / 0.1);
+    }
+    50% {
+      box-shadow: 0 0 25px hsl(39 40% 60% / 0.5), 0 0 50px hsl(39 40% 60% / 0.2), 0 0 80px hsl(39 40% 60% / 0.1);
+    }
+  }
+
+  @keyframes ctaShimmer {
+    0% { background-position: -200% center; }
+    100% { background-position: 200% center; }
+  }
+
+  .animate-cta-glow {
+    animation: ctaGlow 3s ease-in-out infinite;
+    background-image: linear-gradient(
+      110deg,
+      transparent 20%,
+      hsl(39 40% 80% / 0.15) 40%,
+      hsl(39 40% 80% / 0.25) 50%,
+      hsl(39 40% 80% / 0.15) 60%,
+      transparent 80%
+    );
+    background-size: 200% 100%;
+    animation: ctaGlow 3s ease-in-out infinite, ctaShimmer 4s linear infinite;
+  }
+
+  /* Text legibility shadows — subtle halo to separate text from textured backgrounds */
+  .text-shadow-dark {
+    text-shadow: 0 1px 4px rgba(0,0,0,0.7), 0 0 20px rgba(0,0,0,0.35);
+  }
+
+  .text-shadow-light {
+    text-shadow: 0 1px 3px rgba(245,239,224,0.7), 0 0 12px rgba(245,239,224,0.35);
+  }
+
+  /* Checkout modal animations */
+  @keyframes modalBackdropIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  @keyframes modalContentIn {
+    from {
+      opacity: 0;
+      transform: translateY(24px) scale(0.97);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+
+  .animate-modal-backdrop {
+    animation: modalBackdropIn 0.3s ease-out forwards;
+  }
+
+  .animate-modal-content {
+    animation: modalContentIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    animation-delay: 0.1s;
+    opacity: 0;
+  }
+
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    15% { transform: translateX(-6px); }
+    30% { transform: translateX(5px); }
+    45% { transform: translateX(-4px); }
+    60% { transform: translateX(3px); }
+    75% { transform: translateX(-2px); }
+    90% { transform: translateX(1px); }
+  }
+
+  @keyframes errorPulse {
+    0%, 100% { box-shadow: 0 0 12px rgba(244,63,94,0.1); }
+    50% { box-shadow: 0 0 24px rgba(244,63,94,0.25), 0 0 8px rgba(244,63,94,0.1); }
+  }
+}

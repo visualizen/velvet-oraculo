@@ -1,0 +1,542 @@
+
+
+# Design System — Velvet Oráculo
+
+> Extraído do ebook *Tarô do Zero em 7 Dias*, por Luisa.
+> Referência visual para landing page, materiais de venda e comunicação digital da marca.
+
+---
+
+## 1. Filosofia Visual
+
+**Velvet Oráculo** se apresenta como um espaço contemplativo, sofisticado e místico. O design comunica:
+
+- **Intimidade editorial** — tipografia serifada clássica, como um livro raro de biblioteca antiga.
+- **Veludo noturno** — fundos profundos em tons de ameixa e berinjela escura, evocando o próprio nome "velvet".
+- **Ouro velho** — acentos em dourado muted, nunca brilhante ou metálico agressivo.
+- **Ritmo respirado** — muito espaço em branco (escuro, no caso), margens generosas, hierarquia limpa.
+
+**Referências estéticas:**
+Renascença mística, editorial de revistas literárias, livros de ocultismo europeus do século XIX, vintage coquette, surrealismo suave. Evitar: glitter, neon, roxo vibrante digital, sparkles animados de "magia genérica".
+
+**Regra de ouro:** se parece com capa de romance gótico elegante de alfarrabista, está certo. Se parece com app de horóscopo pop, está errado.
+
+---
+
+## 2. Paleta de Cores
+
+### Tokens principais
+
+| Token | Hex | Uso |
+|---|---|---|
+| `--velvet-deep` | `#1F1530` | Background principal (páginas internas) |
+| `--velvet` | `#2B1A3D` | Background de destaque / hero / capa |
+| `--velvet-plum` | `#3A2A4D` | Cards, caixas de conteúdo, blocos de citação |
+| `--velvet-plum-soft` | `#3A2A4D80` | Versão translúcida do plum (50% alpha) para overlays |
+| `--cream` | `#F5EFE0` | Texto principal em fundos escuros |
+| `--cream-muted` | `#D9CFBD` | Texto secundário, legendas, descrições |
+| `--gold` | `#C9A96E` | Acentos, bordas, detalhes decorativos, elementos ✓ |
+| `--gold-deep` | `#A8874E` | Bordas finas, hover state do dourado |
+| `--rose-dust` | `#C4A5AC` | Elementos incorretos/negativos (ex: perguntas erradas com ✗) |
+| `--ink` | `#120808` | Preto-veludo reservado para contraste extremo |
+
+### Regras de aplicação
+
+- **Nunca** usar branco puro (`#FFFFFF`). Sempre cream (`#F5EFE0`).
+- **Nunca** usar preto puro (`#000000`). O mais escuro é `--ink` (`#120808`).
+- Dourado é **acento**, nunca elemento dominante. Usar em molduras finas, pequenos textos em letter-spaced caps, ícones decorativos, bordas laterais de blocos.
+- Rose-dust aparece em contextos específicos de contraste/erro — não usar como cor neutra.
+- Gradiente sutil de vinheta no hero: do `--velvet` no centro para `--velvet-deep` nos cantos, cria sensação de veludo iluminado por vela.
+
+### Exemplos de combinação
+
+```css
+/* Hero section */
+background: radial-gradient(ellipse at center, #2B1A3D 0%, #1F1530 100%);
+color: #F5EFE0;
+
+/* Card de conteúdo */
+background: #3A2A4D;
+border-left: 2px solid #C9A96E;
+color: #F5EFE0;
+
+/* Texto secundário dentro do card */
+color: #D9CFBD;
+font-style: italic;
+```
+
+---
+
+## 3. Tipografia
+
+### Stack de fontes
+
+O sistema usa **quatro fontes** com funções bem definidas:
+
+| Função | Fonte | Peso |
+|---|---|---|
+| Display / Títulos grandes | **IM Fell English** | Regular + Italic |
+| Headings editoriais | **Cormorant Garamond** | Medium / SemiBold |
+| Small caps / letter-spaced | **Cinzel Decorative** | Regular |
+| Ornamento / assinatura | **Pinyon Script** | Regular (uso pontual) |
+
+### Importação (Google Fonts)
+
+```html
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@0;1&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Cinzel+Decorative:wght@400;700&family=Pinyon+Script&display=swap" rel="stylesheet">
+```
+
+### Hierarquia tipográfica
+
+#### `h1` — Título hero
+```css
+font-family: 'IM Fell English', serif;
+font-size: clamp(3rem, 7vw, 5.5rem);
+font-weight: 400;
+line-height: 1.05;
+letter-spacing: -0.01em;
+color: var(--cream);
+```
+*Uso:* "Tarô **do Zero** em 7 Dias". Palavra central (ex: "do Zero") em itálico e cor `--gold`.
+
+#### `h2` — Seção principal
+```css
+font-family: 'IM Fell English', serif;
+font-style: italic;
+font-size: clamp(2rem, 4vw, 3rem);
+font-weight: 400;
+line-height: 1.15;
+color: var(--cream);
+```
+*Uso:* "E agora, pra onde?", "As perguntas certas".
+
+#### `h3` — Subseção temática
+```css
+font-family: 'Cormorant Garamond', serif;
+font-weight: 500;
+font-size: 1.5rem;
+color: var(--gold);
+text-align: center;
+letter-spacing: 0.02em;
+```
+*Uso:* "Amor & Relacionamentos", "Trabalho & Propósito". Flanqueado por ornamentos ✦...✦.
+
+#### `.eyebrow` — Letter-spaced caps (small)
+```css
+font-family: 'Cinzel Decorative', serif;
+font-size: 0.75rem;
+font-weight: 400;
+letter-spacing: 0.4em;
+text-transform: uppercase;
+color: var(--gold);
+```
+*Uso:* "V E L V E T O R Á C U L O", "P O R L U I S A", "T A R E F A D E H O J E", "D I A 1".
+
+#### `body` — Corpo de texto
+```css
+font-family: 'Cormorant Garamond', serif;
+font-weight: 400;
+font-size: 1.125rem;
+line-height: 1.7;
+color: var(--cream);
+```
+
+#### `.caption` — Legenda / explicação
+```css
+font-family: 'Cormorant Garamond', serif;
+font-style: italic;
+font-size: 0.95rem;
+line-height: 1.55;
+color: var(--cream-muted);
+```
+*Uso:* texto pequeno em itálico que explica cada pergunta correta no ebook.
+
+#### `.signature` — Assinatura manuscrita (opcional)
+```css
+font-family: 'Pinyon Script', cursive;
+font-size: 2rem;
+color: var(--gold);
+```
+*Uso pontual:* assinaturas, citações curtas em destaque, "com carinho, Luisa".
+
+---
+
+## 4. Elementos Decorativos
+
+### Ornamentos unicode (usados no ebook)
+
+| Símbolo | Código | Uso |
+|---|---|---|
+| ✦ | `&#10022;` | Estrela de 4 pontas — marcador de seção |
+| ☾ | `&#9790;` | Lua crescente — ponto central de divisor |
+| ✦ ☾ ✦ | | Divisor principal entre seções |
+| ✦ ... ✦ | | Ornamento que flanqueia títulos de subseção |
+| ✗ | `&#10007;` | Marcador de "pergunta errada" (cor: `--rose-dust`) |
+| ✓ | `&#10003;` | Marcador de "pergunta certa" (cor: `--gold`) |
+
+### Molduras e bordas
+
+- **Moldura da capa:** linha dupla fina em `--gold-deep`, com respiro interno de ~40px.
+  ```css
+  border: 1px solid var(--gold-deep);
+  outline: 1px solid var(--gold-deep);
+  outline-offset: 8px;
+  padding: 48px;
+  ```
+
+- **Borda lateral de card:** linha de 2px em `--gold` apenas no lado esquerdo.
+  ```css
+  border-left: 2px solid var(--gold);
+  padding: 1.5rem 1.75rem;
+  background: rgba(58, 42, 77, 0.4);
+  border-radius: 4px;
+  ```
+
+### Divisores
+
+```html
+<!-- Divisor central entre seções grandes -->
+<div class="divider">
+  <span>✦</span><span>☾</span><span>✦</span>
+</div>
+```
+
+```css
+.divider {
+  display: flex;
+  justify-content: center;
+  gap: 1.5rem;
+  color: var(--gold);
+  font-size: 1.25rem;
+  margin: 4rem 0;
+  letter-spacing: 1rem;
+}
+```
+
+---
+
+## 5. Componentes
+
+### 5.1 Hero / Capa
+
+```html
+<section class="hero">
+  <div class="hero-frame">
+    <div class="ornament">✦ ☾ ✦</div>
+    <p class="eyebrow">Velvet Oráculo</p>
+    <h1>Tarô <em>do Zero</em><br>em 7 Dias</h1>
+    <p class="hero-sub">Um guia honesto para começar a ler as cartas com confiança, e as primeiras perguntas certas para fazer ao oráculo.</p>
+    <p class="eyebrow eyebrow-byline">Por Luisa</p>
+  </div>
+</section>
+```
+
+**Especificação:**
+- Altura mínima: `100vh` (ou `85vh` em mobile).
+- Background: gradiente radial `--velvet` → `--velvet-deep`.
+- Moldura dupla em ouro com respiro de 48px.
+- Título com "do Zero" em `font-style: italic; color: var(--gold);`.
+
+### 5.2 Bloco de pergunta certa vs errada
+
+Padrão visual distintivo e memorável do ebook:
+
+```html
+<div class="question-block">
+  <p class="q-wrong">✗ Ele vai voltar pra mim?</p>
+  <p class="q-right">✓ O que essa relação está me mostrando sobre mim mesma neste momento?</p>
+  <p class="q-caption">A primeira te coloca como vítima do destino. A segunda te coloca como protagonista do que está acontecendo.</p>
+</div>
+```
+
+```css
+.question-block {
+  background: rgba(58, 42, 77, 0.4);
+  border-left: 2px solid var(--gold);
+  border-radius: 4px;
+  padding: 1.5rem 1.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.q-wrong {
+  color: var(--rose-dust);
+  font-family: 'IM Fell English', serif;
+  font-style: italic;
+  font-size: 1.05rem;
+  margin-bottom: 0.5rem;
+}
+
+.q-right {
+  color: var(--cream);
+  font-family: 'IM Fell English', serif;
+  font-style: italic;
+  font-size: 1.15rem;
+  margin-bottom: 1rem;
+}
+
+.q-caption {
+  color: var(--cream-muted);
+  font-family: 'Cormorant Garamond', serif;
+  font-style: italic;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  padding-left: 0.5rem;
+}
+```
+
+### 5.3 Card de dia (Dia 1, Dia 2...)
+
+```html
+<article class="day-card">
+  <p class="eyebrow">Dia 1</p>
+  <h3 class="day-title">Escolha o seu baralho</h3>
+  <div class="day-body">
+    <p>Antes de qualquer coisa, você precisa de um baralho que conversa com você...</p>
+  </div>
+  <div class="tarefa">
+    <p class="eyebrow">Tarefa de hoje:</p>
+    <p>Escolha e encomende seu baralho.</p>
+  </div>
+</article>
+```
+
+```css
+.day-card {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 3rem 0;
+  border-bottom: 1px solid rgba(201, 169, 110, 0.15);
+}
+
+.day-title {
+  font-family: 'IM Fell English', serif;
+  font-size: 2rem;
+  color: var(--cream);
+  margin: 0.5rem 0 1.5rem;
+}
+
+.tarefa {
+  background: rgba(58, 42, 77, 0.5);
+  border-left: 2px solid var(--gold);
+  padding: 1.25rem 1.5rem;
+  margin-top: 2rem;
+}
+```
+
+### 5.4 CTA / Botão
+
+O ebook não tem CTA forte (é um lead magnet), mas para a landing page:
+
+```css
+.btn-primary {
+  background: var(--gold);
+  color: var(--velvet-deep);
+  font-family: 'Cinzel Decorative', serif;
+  font-size: 0.85rem;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  padding: 1.1rem 2.5rem;
+  border: none;
+  border-radius: 2px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+  background: var(--cream);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(201, 169, 110, 0.25);
+}
+
+.btn-ghost {
+  background: transparent;
+  color: var(--gold);
+  border: 1px solid var(--gold-deep);
+  /* resto igual ao btn-primary */
+}
+```
+
+### 5.5 Citação em destaque
+
+```html
+<blockquote class="pullquote">
+  A pergunta certa é metade da resposta.<br>
+  Aprenda a fazê-la, e o tarô te responderá com clareza.
+</blockquote>
+```
+
+```css
+.pullquote {
+  font-family: 'IM Fell English', serif;
+  font-style: italic;
+  font-size: 1.5rem;
+  line-height: 1.5;
+  text-align: center;
+  color: var(--cream);
+  max-width: 640px;
+  margin: 4rem auto;
+  padding: 2.5rem;
+  background: rgba(58, 42, 77, 0.4);
+  border-top: 1px solid var(--gold-deep);
+  border-bottom: 1px solid var(--gold-deep);
+}
+```
+
+---
+
+## 6. Espaçamento e Layout
+
+### Grid base
+
+- **Container principal:** `max-width: 720px` (leitura editorial) ou `max-width: 1140px` (landing page geral).
+- **Padding lateral mobile:** `1.5rem` (24px).
+- **Padding lateral desktop:** `4rem` (64px).
+
+### Escala de espaçamento
+
+```css
+--space-xs: 0.5rem;   /* 8px */
+--space-sm: 1rem;     /* 16px */
+--space-md: 1.5rem;   /* 24px */
+--space-lg: 2.5rem;   /* 40px */
+--space-xl: 4rem;     /* 64px */
+--space-2xl: 6rem;    /* 96px */
+```
+
+### Ritmo vertical
+
+- Entre blocos pequenos (ex: perguntas): `--space-md`.
+- Entre seções dentro de um card: `--space-lg`.
+- Entre grandes seções da página: `--space-2xl`.
+- Respeito por respiro: **o design precisa respirar**. Quando em dúvida, adicione mais espaço.
+
+---
+
+## 7. CSS Variables — copiar e colar
+
+```css
+:root {
+  /* Cores */
+  --velvet-deep: #1F1530;
+  --velvet: #2B1A3D;
+  --velvet-plum: #3A2A4D;
+  --cream: #F5EFE0;
+  --cream-muted: #D9CFBD;
+  --gold: #C9A96E;
+  --gold-deep: #A8874E;
+  --rose-dust: #C4A5AC;
+  --ink: #120808;
+
+  /* Fontes */
+  --font-display: 'IM Fell English', 'Cormorant Garamond', Georgia, serif;
+  --font-body: 'Cormorant Garamond', Georgia, serif;
+  --font-caps: 'Cinzel Decorative', 'Cormorant Garamond', serif;
+  --font-script: 'Pinyon Script', cursive;
+
+  /* Espaçamento */
+  --space-xs: 0.5rem;
+  --space-sm: 1rem;
+  --space-md: 1.5rem;
+  --space-lg: 2.5rem;
+  --space-xl: 4rem;
+  --space-2xl: 6rem;
+
+  /* Bordas e raios */
+  --radius-sm: 2px;
+  --radius-md: 4px;
+  --border-gold: 1px solid var(--gold-deep);
+  --border-gold-strong: 2px solid var(--gold);
+
+  /* Transições */
+  --transition: 0.3s ease;
+}
+
+body {
+  background: var(--velvet-deep);
+  color: var(--cream);
+  font-family: var(--font-body);
+  font-size: 1.125rem;
+  line-height: 1.7;
+}
+```
+
+---
+
+## 8. Tailwind Config
+
+```js
+// tailwind.config.js
+module.exports = {
+  theme: {
+    extend: {
+      colors: {
+        velvet: {
+          deep: '#1F1530',
+          DEFAULT: '#2B1A3D',
+          plum: '#3A2A4D',
+        },
+        cream: {
+          DEFAULT: '#F5EFE0',
+          muted: '#D9CFBD',
+        },
+        gold: {
+          DEFAULT: '#C9A96E',
+          deep: '#A8874E',
+        },
+        rose: {
+          dust: '#C4A5AC',
+        },
+        ink: '#120808',
+      },
+      fontFamily: {
+        display: ['"IM Fell English"', 'Georgia', 'serif'],
+        body: ['"Cormorant Garamond"', 'Georgia', 'serif'],
+        caps: ['"Cinzel Decorative"', 'serif'],
+        script: ['"Pinyon Script"', 'cursive'],
+      },
+      letterSpacing: {
+        'caps': '0.4em',
+        'caps-sm': '0.25em',
+      },
+    },
+  },
+}
+```
+
+---
+
+## 9. Sugestões para a landing page
+
+Baseado na estética do ebook, a landing page do lead magnet deveria ter esta estrutura (sugestão):
+
+1. **Hero:** espelhar a capa do ebook — moldura dourada dupla, título grande, subtítulo editorial, CTA "Baixar o guia gratuito".
+2. **Prova de dor:** parágrafo no tom do "Antes de tudo" do ebook — frustração da pessoa que trava na tiragem.
+3. **O que você vai aprender:** grid com os 7 dias, cada um em um card minimalista.
+4. **Prévia do conteúdo "perguntas certas":** 2–3 pares de pergunta errada vs. certa, para demonstrar valor.
+5. **Sobre Luisa:** foto, bio curta em `Cormorant Garamond italic`, autoridade sem arrogância.
+6. **CTA final:** captura de e-mail para entrega do PDF.
+7. **Footer:** `velvetoraculo.com.br` + ornamento `✦ ☾ ✦`.
+
+---
+
+## 10. Checklist de handoff
+
+Para garantir fidelidade visual:
+
+- [ ] Fontes carregadas via Google Fonts com `display=swap`.
+- [ ] Background nunca branco, nunca preto puro.
+- [ ] Ornamentos unicode `✦ ☾ ✦` usados como divisores.
+- [ ] Cards com borda lateral dourada de 2px, nunca todas as bordas.
+- [ ] Texto em itálico preservado onde o ebook usa (títulos, legendas).
+- [ ] Letter-spacing forte (0.4em) em todos os "small caps".
+- [ ] Respiro generoso — mínimo `--space-xl` entre seções.
+- [ ] Hover states em botões com elevação sutil e glow dourado baixo.
+- [ ] Mobile: moldura e padding reduzidos proporcionalmente, nunca desaparecem.
+- [ ] Teste de contraste: cream sobre velvet-deep deve passar AA (passa: 10.8:1).
+
+---
+
+*Velvet Oráculo — Design System v1.0*
+*Extraído do ebook "Tarô do Zero em 7 Dias", por Luisa.*
