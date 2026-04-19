@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { createPortal } from "react-dom";
 import Ornament from "./Ornament";
+import { supabase } from "@/lib/supabase";
 
 const KIWIFY_CHECKOUT_URL = "https://pay.kiwify.com.br/GBx9stV";
 
@@ -81,29 +82,36 @@ const CheckoutModal = ({ isOpen, onClose }: CheckoutModalProps) => {
     setTouched((prev) => ({ ...prev, [field]: true }));
   };
 
-  const saveLead = () => {
+  const saveLead = async () => {
     const lead = {
       name: name.trim(),
       email: email.trim().toLowerCase(),
       phone: phoneDigits,
-      capturedAt: new Date().toISOString(),
       source: "sales-page-cta",
     };
 
+    // Save to Supabase (non-blocking — redirect is the priority)
+    try {
+      await supabase.from("checkout_leads").insert(lead);
+    } catch {
+      // Silent fail — redirect is the priority
+    }
+
+    // Fallback: also save to localStorage
     try {
       const existingLeads = JSON.parse(
         localStorage.getItem("velvet_leads") || "[]"
       );
-      existingLeads.push(lead);
+      existingLeads.push({ ...lead, capturedAt: new Date().toISOString() });
       localStorage.setItem("velvet_leads", JSON.stringify(existingLeads));
     } catch {
-      // Silent fail — redirect is the priority
+      // Silent fail
     }
 
     return lead;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     // Mark all fields as touched on submit attempt
@@ -118,7 +126,7 @@ const CheckoutModal = ({ isOpen, onClose }: CheckoutModalProps) => {
     setError("");
 
     try {
-      const lead = saveLead();
+      const lead = await saveLead();
 
       // Build Kiwify checkout URL with pre-populated fields
       const params = new URLSearchParams({
@@ -301,7 +309,7 @@ const CheckoutModal = ({ isOpen, onClose }: CheckoutModalProps) => {
                     REDIRECIONANDO...
                   </span>
                 ) : (
-                  "IR PARA O CHECKOUT SEGURO"
+                  "COMEÇAR JORNADA"
                 )}
               </button>
             </form>

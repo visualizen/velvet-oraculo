@@ -28,7 +28,7 @@ const BioSection = () => (
 
           <div className="relative w-48 h-64 md:w-56 md:h-[340px] rounded-sm overflow-hidden shadow-[0_8px_40px_rgba(100,20,30,0.12)]">
             <img
-              src="/images/luisa-perfil.png"
+              src="/images/luisa-perfil.jpg"
               alt="Luísa - Taróloga e professora"
               className="w-full h-full object-cover object-top group-hover:scale-[1.03] transition-transform duration-700"
             />

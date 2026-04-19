@@ -48,6 +48,11 @@ const ConsultaPage = () => {
   const inputRef = useRef<HTMLInputElement | HTMLTextAreaElement>(null);
 
   useEffect(() => {
+    document.title = "Consulta de Tarô Online · Velvet Oráculo";
+    return () => { document.title = "Curso de Tarot Online · Do Básico ao Avançado · Velvet Oráculo"; };
+  }, []);
+
+  useEffect(() => {
     // Focus input when step changes
     const timer = setTimeout(() => {
       inputRef.current?.focus();

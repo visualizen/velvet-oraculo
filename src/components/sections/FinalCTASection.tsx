@@ -4,7 +4,7 @@ import CTAButton from "../CTAButton";
 
 const FinalCTASection = () => (
   <TextureSection
-    texture="/textures/portal-bg.png"
+    texture="/textures/portal-bg.jpg"
     overlay="rgba(5,2,8,0.45)"
     className="py-24 md:py-32"
   >

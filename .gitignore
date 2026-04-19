@@ -32,3 +32,6 @@ flora_brand_guide (1).html
 
 # AI/Editor tools
 .gemini/
+
+.env
+.env.local

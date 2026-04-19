@@ -33,7 +33,7 @@ const EbookBioSection = ({ onOpenModal }: EbookBioSectionProps) => (
 
           <div className="relative w-36 h-52 sm:w-40 sm:h-56 md:w-44 md:h-[260px] rounded-sm overflow-hidden shadow-[0_4px_24px_rgba(201,169,110,0.08)]">
             <img
-              src="/images/luisa-perfil.png"
+              src="/images/luisa-perfil.jpg"
               alt="Luísa, taróloga e autora"
               className="w-full h-full object-cover object-top group-hover:scale-[1.03] transition-transform duration-700"
             />

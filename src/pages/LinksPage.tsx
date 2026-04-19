@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { Link } from "react-router-dom";
 import TextureSection from "@/components/TextureSection";
 import Ornament from "@/components/Ornament";
@@ -26,7 +27,13 @@ const links = [
   },
 ];
 
-const LinksPage = () => (
+const LinksPage = () => {
+  useEffect(() => {
+    document.title = "Velvet Oráculo · Links";
+    return () => { document.title = "Curso de Tarot Online · Do Básico ao Avançado · Velvet Oráculo"; };
+  }, []);
+
+  return (
   <TextureSection
     texture="/textures/dark-parchment.jpg"
     overlay="rgba(18,8,8,0.68)"
@@ -118,6 +125,7 @@ const LinksPage = () => (
       </div>
     </div>
   </TextureSection>
-);
+  );
+};
 
 export default LinksPage;

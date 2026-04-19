@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, type FormEvent } from "react";
+import { supabase } from "@/lib/supabase";
 
 const EBOOK_PDF_URL = "/taro-do-zero-7-dias.pdf";
 
@@ -207,8 +208,16 @@ const EbookOptinModal = ({ isOpen, onClose }: EbookOptinModalProps) => {
     setErrorMessage("");
 
     try {
-      // TODO: Integrar com Supabase
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      const { error } = await supabase.from("ebook_leads").insert({
+        name,
+        email,
+        whatsapp: whatsapp.replace(/\D/g, ""),
+        ja_tira_taro: jaTiraTaro,
+        nivel: jaTiraTaro ? nivel : null,
+        expectativas,
+      });
+      if (error) throw error;
+
       setStatus("success");
       animateTransition("forward", () => setStep(3));
     } catch (err: unknown) {
