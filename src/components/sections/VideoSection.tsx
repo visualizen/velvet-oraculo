@@ -30,13 +30,14 @@ const VideoSection = () => {
 
       const player = new (window as any).Vimeo.Player(containerRef.current, {
         id: VIMEO_VIDEO_ID,
-        background: false,
+        background: true,
         autopause: false,
         autoplay: true,
         muted: true,
-        loop: false,
+        loop: true,
         controls: false,
         responsive: true,
+        playsinline: true,
         title: false,
         byline: false,
         portrait: false,
