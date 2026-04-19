@@ -24,7 +24,7 @@ const FinalCTASection = () => (
       </div>
 
       <p className="fade-item font-body text-foreground/60 text-sm">
-        12x de R$35,68 · ou R$365 à vista · Acesso imediato · Garantia de 7 dias
+        <span className="line-through text-foreground/35 mr-1">R$997</span> → 12x de R$35,68 · ou R$365 à vista · Acesso imediato · Garantia de 7 dias
       </p>
 
       <Ornament className="fade-item mt-14 opacity-40" />

@@ -1,3 +1,4 @@
+import { useState } from "react";
 import StickyNav from "@/components/StickyNav";
 import HeroSection from "@/components/sections/HeroSection";
 import IdentificationSection from "@/components/sections/IdentificationSection";
@@ -9,21 +10,32 @@ import TestimonialsSection from "@/components/sections/TestimonialsSection";
 import PricingSection from "@/components/sections/PricingSection";
 import FAQSection from "@/components/sections/FAQSection";
 import FinalCTASection from "@/components/sections/FinalCTASection";
+import FloatingCTA from "@/components/FloatingCTA";
+import CheckoutModal from "@/components/CheckoutModal";
 
-const Index = () => (
-  <div className="min-h-screen bg-background">
-    <StickyNav />
-    <HeroSection />
-    <IdentificationSection />
-    <PromiseSection />
-    <ModulesSection />
-    <BonusSection />
-    <BioSection />
-    <TestimonialsSection />
-    <PricingSection />
-    <FAQSection />
-    <FinalCTASection />
-  </div>
-);
+const Index = () => {
+  const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
+
+  return (
+    <div className="min-h-screen bg-background">
+      <StickyNav />
+      <HeroSection />
+      <IdentificationSection />
+      <PromiseSection />
+      <ModulesSection />
+      <BonusSection />
+      <BioSection />
+      <TestimonialsSection />
+      <PricingSection onOpenCheckout={() => setIsCheckoutOpen(true)} />
+      <FAQSection />
+      <FinalCTASection />
+      <FloatingCTA />
+      <CheckoutModal
+        isOpen={isCheckoutOpen}
+        onClose={() => setIsCheckoutOpen(false)}
+      />
+    </div>
+  );
+};
 
 export default Index;

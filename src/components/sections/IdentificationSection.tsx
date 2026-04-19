@@ -3,6 +3,7 @@ import Ornament from "../Ornament";
 
 const IdentificationSection = () => (
   <TextureSection
+    id="identificacao"
     texture="/textures/cream-paper.jpg"
     overlay="rgba(245,239,224,0.92)"
     className="py-20 md:py-28"
