@@ -4,9 +4,19 @@ import Ornament from "../Ornament";
 import CTAButton from "../CTAButton";
 
 const VIMEO_VIDEO_ID = "1184470820";
+const SUPABASE_VIDEO_URL =
+  "https://gvhqihdqxqiiokyhteba.supabase.co/storage/v1/object/public/videos/video-landingpage.mp4";
+
+/* Detect restrictive in-app browsers */
+const IS_IN_APP = (() => {
+  if (typeof navigator === "undefined") return false;
+  const ua = navigator.userAgent || "";
+  return /\b(BytedanceWebview|TikTok|Musical_ly|Instagram|FBAN|FBAV|Line\/|Snapchat)\b/i.test(ua);
+})();
 
 const HeroSection = () => {
   const iframeRef = useRef<HTMLIFrameElement>(null);
+  const nativeVideoRef = useRef<HTMLVideoElement>(null);
   const playerRef = useRef<any>(null);
   const progressBarRef = useRef<HTMLDivElement>(null);
 
@@ -15,13 +25,14 @@ const HeroSection = () => {
   const [progress, setProgress] = useState(0);
   const [duration, setDuration] = useState(0);
   const [currentTime, setCurrentTime] = useState(0);
-  const [isReady, setIsReady] = useState(false);
+  const [isReady, setIsReady] = useState(IS_IN_APP); // native video is ready immediately
   const [showControls, setShowControls] = useState(true);
   const hideTimerRef = useRef<ReturnType<typeof setTimeout>>();
 
-  /* ─── Vimeo SDK ─── */
+  /* ─── Vimeo SDK (only for regular browsers) ─── */
   useEffect(() => {
-    // Safety: remove loading overlay after 5s even if SDK never reports ready
+    if (IS_IN_APP) return; // skip Vimeo entirely in in-app browsers
+
     const fallbackTimer = setTimeout(() => setIsReady(true), 5000);
 
     const existing = document.querySelector(
@@ -90,18 +101,31 @@ const HeroSection = () => {
   }, [isPlaying, resetHide]);
 
   const handleVideoClick = useCallback(() => {
-    const p = playerRef.current;
-    if (!p) return;
-    p.setCurrentTime(0).then(() => p.play());
+    if (IS_IN_APP) {
+      const v = nativeVideoRef.current;
+      if (!v) return;
+      v.currentTime = 0;
+      v.play().catch(() => {});
+    } else {
+      const p = playerRef.current;
+      if (!p) return;
+      p.setCurrentTime(0).then(() => p.play());
+    }
     resetHide();
   }, [resetHide]);
 
   const togglePlay = useCallback(
     (e: React.MouseEvent) => {
       e.stopPropagation();
-      const p = playerRef.current;
-      if (!p) return;
-      isPlaying ? p.pause() : p.play();
+      if (IS_IN_APP) {
+        const v = nativeVideoRef.current;
+        if (!v) return;
+        isPlaying ? v.pause() : v.play().catch(() => {});
+      } else {
+        const p = playerRef.current;
+        if (!p) return;
+        isPlaying ? p.pause() : p.play();
+      }
       resetHide();
     },
     [isPlaying, resetHide]
@@ -110,14 +134,28 @@ const HeroSection = () => {
   const toggleMute = useCallback(
     (e: React.MouseEvent) => {
       e.stopPropagation();
-      const p = playerRef.current;
-      if (!p) return;
-      if (isMuted) {
-        p.setVolume(0.7);
-        setIsMuted(false);
+      if (IS_IN_APP) {
+        const v = nativeVideoRef.current;
+        if (!v) return;
+        if (isMuted) {
+          v.muted = false;
+          v.volume = 0.7;
+          setIsMuted(false);
+        } else {
+          v.muted = true;
+          v.volume = 0;
+          setIsMuted(true);
+        }
       } else {
-        p.setVolume(0);
-        setIsMuted(true);
+        const p = playerRef.current;
+        if (!p) return;
+        if (isMuted) {
+          p.setVolume(0.7);
+          setIsMuted(false);
+        } else {
+          p.setVolume(0);
+          setIsMuted(true);
+        }
       }
       resetHide();
     },
@@ -127,12 +165,19 @@ const HeroSection = () => {
   const handleSeek = useCallback(
     (e: React.MouseEvent) => {
       e.stopPropagation();
-      const p = playerRef.current;
       const bar = progressBarRef.current;
-      if (!p || !bar || !duration) return;
+      if (!bar || !duration) return;
       const rect = bar.getBoundingClientRect();
       const pct = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
-      p.setCurrentTime(pct * duration);
+      if (IS_IN_APP) {
+        const v = nativeVideoRef.current;
+        if (!v) return;
+        v.currentTime = pct * duration;
+      } else {
+        const p = playerRef.current;
+        if (!p) return;
+        p.setCurrentTime(pct * duration);
+      }
       setProgress(pct * 100);
       resetHide();
     },
@@ -191,21 +236,51 @@ const HeroSection = () => {
             >
               {/* 16:9 aspect-ratio wrapper */}
               <div className="relative w-full" style={{ paddingBottom: "56.25%" }}>
-                {/* Vimeo iframe — always rendered */}
-                <iframe
-                  ref={iframeRef}
-                  src={`https://player.vimeo.com/video/${VIMEO_VIDEO_ID}?autoplay=1&muted=1&loop=1&playsinline=1&controls=0&title=0&byline=0&portrait=0&badge=0&autopause=0`}
-                  allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media; web-share"
-                  referrerPolicy="strict-origin-when-cross-origin"
-                  title="vídeo landingpage"
-                  className="absolute inset-0 w-full h-full border-0"
-                  allowFullScreen
-                  playsInline
-                  // @ts-ignore
-                  webkit-playsinline="true"
-                />
+                {/* ─── In-app browser: native <video> with Supabase CDN ─── */}
+                {IS_IN_APP ? (
+                  <video
+                    ref={nativeVideoRef}
+                    src={SUPABASE_VIDEO_URL}
+                    autoPlay
+                    muted
+                    loop
+                    playsInline
+                    // @ts-ignore
+                    webkit-playsinline="true"
+                    className="absolute inset-0 w-full h-full object-cover"
+                    onLoadedData={() => setIsReady(true)}
+                    onTimeUpdate={(e) => {
+                      const v = e.currentTarget;
+                      if (v.duration) {
+                        setCurrentTime(v.currentTime);
+                        setDuration(v.duration);
+                        setProgress((v.currentTime / v.duration) * 100);
+                      }
+                    }}
+                    onPlay={() => setIsPlaying(true)}
+                    onPause={() => setIsPlaying(false)}
+                    onEnded={() => {
+                      setIsPlaying(false);
+                      setProgress(100);
+                    }}
+                  />
+                ) : (
+                  /* ─── Normal browser: Vimeo iframe ─── */
+                  <iframe
+                    ref={iframeRef}
+                    src={`https://player.vimeo.com/video/${VIMEO_VIDEO_ID}?autoplay=1&muted=1&loop=1&playsinline=1&controls=0&title=0&byline=0&portrait=0&badge=0&autopause=0`}
+                    allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media; web-share"
+                    referrerPolicy="strict-origin-when-cross-origin"
+                    title="vídeo landingpage"
+                    className="absolute inset-0 w-full h-full border-0"
+                    allowFullScreen
+                    playsInline
+                    // @ts-ignore
+                    webkit-playsinline="true"
+                  />
+                )}
 
-                {/* Click overlay (captures clicks above the iframe) */}
+                {/* Click overlay (captures clicks above the iframe/video) */}
                 <div className="absolute inset-0 z-10" />
 
                 {/* Loading spinner — auto-dismissed after 5s timeout */}
