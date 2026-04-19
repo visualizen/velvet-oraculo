@@ -34,10 +34,12 @@ const HeroSection = () => {
     // TikTok GIF mode: swap to real video (will go fullscreen, that's OK)
     if (showGif) {
       setShowGif(false);
+      setIsMuted(false);
       setIsReady(false);
       setTimeout(() => {
         const v = videoRef.current;
         if (v) {
+          v.muted = false;
           v.volume = 0.7;
           v.play().catch(() => {});
         }
