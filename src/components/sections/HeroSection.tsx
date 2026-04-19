@@ -194,7 +194,7 @@ const HeroSection = () => {
                 {/* Vimeo iframe — always rendered */}
                 <iframe
                   ref={iframeRef}
-                  src={`https://player.vimeo.com/video/${VIMEO_VIDEO_ID}?background=1&autoplay=1&loop=1&muted=1&playsinline=1&controls=0`}
+                  src={`https://player.vimeo.com/video/${VIMEO_VIDEO_ID}?autoplay=1&muted=1&loop=1&playsinline=1&controls=0&title=0&byline=0&portrait=0&badge=0&autopause=0`}
                   allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media; web-share"
                   referrerPolicy="strict-origin-when-cross-origin"
                   title="vídeo landingpage"
