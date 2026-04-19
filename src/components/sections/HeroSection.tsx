@@ -6,85 +6,126 @@ import CTAButton from "../CTAButton";
 const VIDEO_URL =
   "https://gvhqihdqxqiiokyhteba.supabase.co/storage/v1/object/public/videos/video-landingpage.mp4";
 
+/* Detect TikTok in-app browser specifically */
+const IS_TIKTOK = (() => {
+  if (typeof navigator === "undefined") return false;
+  const ua = navigator.userAgent || "";
+  return /BytedanceWebview|TikTok|Musical_ly/i.test(ua);
+})();
+
 const HeroSection = () => {
-  const videoRef = useRef<HTMLVideoElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const videoRef = useRef<HTMLVideoElement | null>(null);
   const progressBarRef = useRef<HTMLDivElement>(null);
 
   const [isMuted, setIsMuted] = useState(true);
   const [isPlaying, setIsPlaying] = useState(false);
   const [isReady, setIsReady] = useState(false);
-  const [realProgress, setRealProgress] = useState(0); // 0-100 real
+  const [realProgress, setRealProgress] = useState(0);
   const [duration, setDuration] = useState(0);
 
-  /* ─── Accelerated progress: first half of video fills 75% of bar ─── */
+  /* ─── Accelerated progress: first half fills 75% of bar ─── */
   const getVisualProgress = (real: number) => {
-    if (real <= 50) return (real / 50) * 75; // 0-50% real → 0-75% visual
-    return 75 + ((real - 50) / 50) * 25; // 50-100% real → 75-100% visual
-    // This makes the bar move ~3x faster in the first half
+    if (real <= 50) return (real / 50) * 75;
+    return 75 + ((real - 50) / 50) * 25;
   };
-
   const visualProgress = getVisualProgress(realProgress);
 
-  /* ─── Init video: force playsinline then play programmatically ─── */
+  /* ─── Create video element via pure DOM (bypasses TikTok interception) ─── */
   useEffect(() => {
-    const v = videoRef.current;
-    if (!v) return;
+    const container = containerRef.current;
+    if (!container) return;
 
-    // Force playsinline attributes BEFORE play
-    v.setAttribute("playsinline", "");
-    v.setAttribute("webkit-playsinline", "true");
-    v.setAttribute("x-webkit-airplay", "deny");
-    v.playsInline = true;
-    v.muted = true;
-    v.loop = true;
+    // Create video element entirely via DOM API
+    const video = document.createElement("video");
 
-    // Play programmatically (NOT via autoPlay attribute)
-    const tryPlay = () => {
-      v.play().catch(() => {
-        // Some browsers block even muted autoplay; that's fine
-      });
-    };
+    // SET ALL ATTRIBUTES BEFORE APPENDING TO DOM
+    // This is critical: TikTok scans the DOM for <video> elements
+    // and if playsinline isn't set when it's first detected, it forces fullscreen
+    video.setAttribute("playsinline", "");
+    video.setAttribute("webkit-playsinline", "true");
+    video.setAttribute("x-webkit-airplay", "deny");
+    video.setAttribute("disablePictureInPicture", "");
+    video.setAttribute("controlsList", "nofullscreen nodownload noplaybackrate");
+    video.playsInline = true;
+    video.muted = true;
+    video.loop = true;
+    video.preload = "auto";
+    video.src = VIDEO_URL;
 
-    if (v.readyState >= 3) {
+    // Style it to fill the container
+    video.style.cssText =
+      "position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;";
+
+    // Event listeners BEFORE appending
+    video.addEventListener("canplay", () => {
       setIsReady(true);
-      tryPlay();
-    } else {
-      v.addEventListener("canplay", () => {
-        setIsReady(true);
-        tryPlay();
-      }, { once: true });
+      // Only autoplay if NOT TikTok (TikTok forces fullscreen on .play())
+      if (!IS_TIKTOK) {
+        video.play().catch(() => {});
+      }
+    }, { once: true });
+
+    video.addEventListener("timeupdate", () => {
+      if (!video.duration) return;
+      setRealProgress((video.currentTime / video.duration) * 100);
+      setDuration(video.duration);
+    });
+
+    video.addEventListener("play", () => setIsPlaying(true));
+    video.addEventListener("pause", () => setIsPlaying(false));
+    video.addEventListener("ended", () => {
+      setIsPlaying(false);
+      setRealProgress(100);
+    });
+
+    // Store ref
+    videoRef.current = video;
+
+    // NOW append to DOM (with all attributes already set)
+    container.appendChild(video);
+
+    // For non-TikTok: try to play immediately if already ready
+    if (!IS_TIKTOK && video.readyState >= 3) {
+      setIsReady(true);
+      video.play().catch(() => {});
     }
+
+    return () => {
+      video.pause();
+      video.src = "";
+      if (container.contains(video)) {
+        container.removeChild(video);
+      }
+      videoRef.current = null;
+    };
   }, []);
 
-  /* ─── Video event handlers ─── */
-  const onTimeUpdate = useCallback(() => {
-    const v = videoRef.current;
-    if (!v || !v.duration) return;
-    setRealProgress((v.currentTime / v.duration) * 100);
-    setDuration(v.duration);
-  }, []);
-
-  /* ─── Click on video: toggle mute (first click) or play/pause ─── */
+  /* ─── Click handler ─── */
   const handleClick = useCallback(() => {
     const v = videoRef.current;
     if (!v) return;
 
+    if (IS_TIKTOK && !isPlaying && isMuted) {
+      // TikTok: first tap starts playing (muted, inline hopefully)
+      v.play().catch(() => {});
+      return;
+    }
+
     if (isMuted) {
-      // First interaction: unmute
       v.muted = false;
       v.volume = 0.7;
       setIsMuted(false);
     } else {
-      // Subsequent: toggle play/pause
       if (v.paused) {
         v.play().catch(() => {});
       } else {
         v.pause();
       }
     }
-  }, [isMuted]);
+  }, [isMuted, isPlaying]);
 
-  /* ─── Seek on progress bar click ─── */
+  /* ─── Seek ─── */
   const handleSeek = useCallback(
     (e: React.MouseEvent) => {
       e.stopPropagation();
@@ -95,7 +136,6 @@ const HeroSection = () => {
       const rect = bar.getBoundingClientRect();
       const clickPct = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
 
-      // Reverse the visual mapping to get real time
       let realPct: number;
       if (clickPct <= 0.75) {
         realPct = (clickPct / 0.75) * 0.5;
@@ -137,7 +177,6 @@ const HeroSection = () => {
               Para quem quer se conhecer e ler com autonomia.
             </p>
 
-            {/* CTA visible only on desktop (on mobile it goes below the video) */}
             <div className="fade-item hidden lg:block">
               <CTAButton />
             </div>
@@ -149,36 +188,30 @@ const HeroSection = () => {
               className="relative w-full rounded-md overflow-hidden shadow-[0_4px_60px_rgba(201,169,110,0.12)] border border-primary/10 cursor-pointer"
               onClick={handleClick}
             >
-              {/* 16:9 aspect-ratio wrapper */}
-              <div className="relative w-full" style={{ paddingBottom: "56.25%" }}>
-                {/* Native video — NO autoPlay attribute (triggered via JS) */}
-                <video
-                  ref={videoRef}
-                  src={VIDEO_URL}
-                  playsInline
-                  muted
-                  loop
-                  preload="auto"
-                  className="absolute inset-0 w-full h-full object-cover"
-                  onTimeUpdate={onTimeUpdate}
-                  onPlay={() => setIsPlaying(true)}
-                  onPause={() => setIsPlaying(false)}
-                  onEnded={() => {
-                    setIsPlaying(false);
-                    setRealProgress(100);
-                  }}
-                />
+              {/* 16:9 wrapper — video is injected here via DOM */}
+              <div
+                ref={containerRef}
+                className="relative w-full bg-[#0a0505]"
+                style={{ paddingBottom: "56.25%" }}
+              />
 
-                {/* Click overlay */}
-                <div className="absolute inset-0 z-10" />
+              {/* Click overlay */}
+              <div className="absolute inset-0 z-10" />
 
-                {/* Unmute button — small, circular, centered */}
-                {isMuted && isReady && (
-                  <div className="absolute inset-0 z-20 flex items-center justify-center pointer-events-none">
-                    <div
-                      className="w-12 h-12 rounded-full bg-black/60 backdrop-blur-sm flex items-center justify-center border border-white/15 shadow-lg"
-                      style={{ animation: "pulse-gentle 2s ease-in-out infinite" }}
-                    >
+              {/* Unmute / Play button */}
+              {isReady && (isMuted || (IS_TIKTOK && !isPlaying)) && (
+                <div className="absolute inset-0 z-20 flex items-center justify-center pointer-events-none">
+                  <div
+                    className="w-12 h-12 rounded-full bg-black/60 backdrop-blur-sm flex items-center justify-center border border-white/15 shadow-lg"
+                    style={{ animation: "pulse-gentle 2s ease-in-out infinite" }}
+                  >
+                    {IS_TIKTOK && !isPlaying ? (
+                      /* Play icon for TikTok (video not started yet) */
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="rgba(255,255,255,0.85)">
+                        <polygon points="8,5 19,12 8,19" />
+                      </svg>
+                    ) : (
+                      /* Speaker muted icon */
                       <svg
                         width="20"
                         height="20"
@@ -193,19 +226,19 @@ const HeroSection = () => {
                         <line x1="23" y1="9" x2="17" y2="15" />
                         <line x1="17" y1="9" x2="23" y2="15" />
                       </svg>
-                    </div>
+                    )}
                   </div>
-                )}
+                </div>
+              )}
 
-                {/* Loading spinner */}
-                {!isReady && (
-                  <div className="absolute inset-0 z-20 flex items-center justify-center bg-[#0a0505]">
-                    <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
-                  </div>
-                )}
-              </div>
+              {/* Loading spinner */}
+              {!isReady && (
+                <div className="absolute inset-0 z-20 flex items-center justify-center bg-[#0a0505]">
+                  <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+                </div>
+              )}
 
-              {/* ─── Progress bar (always visible, minimal) ─── */}
+              {/* Progress bar */}
               <div
                 ref={progressBarRef}
                 className="absolute bottom-0 left-0 right-0 z-30 h-[3px] bg-white/10 cursor-pointer"
@@ -222,14 +255,13 @@ const HeroSection = () => {
             </div>
           </div>
 
-          {/* ─── MOBILE CTA (below video) ─── */}
+          {/* ─── MOBILE CTA ─── */}
           <div className="fade-item order-3 lg:hidden flex justify-center w-full">
             <CTAButton />
           </div>
         </div>
       </div>
 
-      {/* Gentle pulse animation for unmute button */}
       <style>{`
         @keyframes pulse-gentle {
           0%, 100% { transform: scale(1); opacity: 0.9; }
