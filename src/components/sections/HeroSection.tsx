@@ -3,215 +3,111 @@ import TextureSection from "../TextureSection";
 import Ornament from "../Ornament";
 import CTAButton from "../CTAButton";
 
-const VIMEO_VIDEO_ID = "1184470820";
-const SUPABASE_VIDEO_URL =
+const VIDEO_URL =
   "https://gvhqihdqxqiiokyhteba.supabase.co/storage/v1/object/public/videos/video-landingpage.mp4";
 
-/* Detect restrictive in-app browsers */
-const IS_IN_APP = (() => {
-  if (typeof navigator === "undefined") return false;
-  const ua = navigator.userAgent || "";
-  return /\b(BytedanceWebview|TikTok|Musical_ly|Instagram|FBAN|FBAV|Line\/|Snapchat)\b/i.test(ua);
-})();
-
 const HeroSection = () => {
-  const iframeRef = useRef<HTMLIFrameElement>(null);
-  const nativeVideoRef = useRef<HTMLVideoElement>(null);
-  const playerRef = useRef<any>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
   const progressBarRef = useRef<HTMLDivElement>(null);
 
-  const [isPlaying, setIsPlaying] = useState(true);
   const [isMuted, setIsMuted] = useState(true);
-  const [progress, setProgress] = useState(0);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [isReady, setIsReady] = useState(false);
+  const [realProgress, setRealProgress] = useState(0); // 0-100 real
   const [duration, setDuration] = useState(0);
-  const [currentTime, setCurrentTime] = useState(0);
-  const [isReady, setIsReady] = useState(IS_IN_APP); // native video is ready immediately
-  const [showControls, setShowControls] = useState(true);
-  const hideTimerRef = useRef<ReturnType<typeof setTimeout>>();
 
-  /* ─── Vimeo SDK (only for regular browsers) ─── */
+  /* ─── Accelerated progress: first half of video fills 75% of bar ─── */
+  const getVisualProgress = (real: number) => {
+    if (real <= 50) return (real / 50) * 75; // 0-50% real → 0-75% visual
+    return 75 + ((real - 50) / 50) * 25; // 50-100% real → 75-100% visual
+    // This makes the bar move ~3x faster in the first half
+  };
+
+  const visualProgress = getVisualProgress(realProgress);
+
+  /* ─── Init video: force playsinline then play programmatically ─── */
   useEffect(() => {
-    if (IS_IN_APP) return; // skip Vimeo entirely in in-app browsers
-
-    const fallbackTimer = setTimeout(() => setIsReady(true), 5000);
-
-    const existing = document.querySelector(
-      'script[src="https://player.vimeo.com/api/player.js"]'
-    );
-
-    const init = () => {
-      if (!iframeRef.current || !(window as any).Vimeo) return;
-
-      const player = new (window as any).Vimeo.Player(iframeRef.current);
-      playerRef.current = player;
-
-      player.ready().then(() => {
-        clearTimeout(fallbackTimer);
-        setIsReady(true);
-        player.setVolume(0);
-        player.play().catch(() => {});
-      });
-
-      player.on("timeupdate", (d: any) => {
-        setCurrentTime(d.seconds);
-        setProgress(d.percent * 100);
-      });
-
-      player.getDuration().then((d: number) => setDuration(d));
-      player.on("play", () => setIsPlaying(true));
-      player.on("pause", () => setIsPlaying(false));
-      player.on("ended", () => {
-        setIsPlaying(false);
-        setProgress(100);
-      });
-    };
-
-    if (existing) {
-      (window as any).Vimeo ? init() : existing.addEventListener("load", init);
-    } else {
-      const s = document.createElement("script");
-      s.src = "https://player.vimeo.com/api/player.js";
-      s.async = true;
-      s.onload = init;
-      document.head.appendChild(s);
-    }
-
-    return () => {
-      clearTimeout(fallbackTimer);
-      playerRef.current?.destroy();
-    };
-  }, []);
-
-  /* ─── Force playsinline on native video (iOS/TikTok) ─── */
-  useEffect(() => {
-    const v = nativeVideoRef.current;
+    const v = videoRef.current;
     if (!v) return;
+
+    // Force playsinline attributes BEFORE play
     v.setAttribute("playsinline", "");
     v.setAttribute("webkit-playsinline", "true");
     v.setAttribute("x-webkit-airplay", "deny");
     v.playsInline = true;
-  }, []);
-  /* ─── Controls auto-hide ─── */
-  const resetHide = useCallback(() => {
-    setShowControls(true);
-    if (hideTimerRef.current) clearTimeout(hideTimerRef.current);
-    hideTimerRef.current = setTimeout(() => {
-      if (isPlaying) setShowControls(false);
-    }, 3000);
-  }, [isPlaying]);
+    v.muted = true;
+    v.loop = true;
 
-  useEffect(() => {
-    if (!isPlaying) {
-      setShowControls(true);
-      if (hideTimerRef.current) clearTimeout(hideTimerRef.current);
+    // Play programmatically (NOT via autoPlay attribute)
+    const tryPlay = () => {
+      v.play().catch(() => {
+        // Some browsers block even muted autoplay; that's fine
+      });
+    };
+
+    if (v.readyState >= 3) {
+      setIsReady(true);
+      tryPlay();
     } else {
-      resetHide();
+      v.addEventListener("canplay", () => {
+        setIsReady(true);
+        tryPlay();
+      }, { once: true });
     }
-  }, [isPlaying, resetHide]);
+  }, []);
 
-  const handleVideoClick = useCallback(() => {
-    // First click unmutes, subsequent clicks toggle play/pause
+  /* ─── Video event handlers ─── */
+  const onTimeUpdate = useCallback(() => {
+    const v = videoRef.current;
+    if (!v || !v.duration) return;
+    setRealProgress((v.currentTime / v.duration) * 100);
+    setDuration(v.duration);
+  }, []);
+
+  /* ─── Click on video: toggle mute (first click) or play/pause ─── */
+  const handleClick = useCallback(() => {
+    const v = videoRef.current;
+    if (!v) return;
+
     if (isMuted) {
-      if (IS_IN_APP) {
-        const v = nativeVideoRef.current;
-        if (!v) return;
-        v.muted = false;
-        v.volume = 0.7;
-      } else {
-        const p = playerRef.current;
-        if (!p) return;
-        p.setVolume(0.7);
-      }
+      // First interaction: unmute
+      v.muted = false;
+      v.volume = 0.7;
       setIsMuted(false);
     } else {
-      if (IS_IN_APP) {
-        const v = nativeVideoRef.current;
-        if (!v) return;
-        isPlaying ? v.pause() : v.play().catch(() => {});
+      // Subsequent: toggle play/pause
+      if (v.paused) {
+        v.play().catch(() => {});
       } else {
-        const p = playerRef.current;
-        if (!p) return;
-        isPlaying ? p.pause() : p.play();
+        v.pause();
       }
     }
-    resetHide();
-  }, [isMuted, isPlaying, resetHide]);
+  }, [isMuted]);
 
-  const togglePlay = useCallback(
-    (e: React.MouseEvent) => {
-      e.stopPropagation();
-      if (IS_IN_APP) {
-        const v = nativeVideoRef.current;
-        if (!v) return;
-        isPlaying ? v.pause() : v.play().catch(() => {});
-      } else {
-        const p = playerRef.current;
-        if (!p) return;
-        isPlaying ? p.pause() : p.play();
-      }
-      resetHide();
-    },
-    [isPlaying, resetHide]
-  );
-
-  const toggleMute = useCallback(
-    (e: React.MouseEvent) => {
-      e.stopPropagation();
-      if (IS_IN_APP) {
-        const v = nativeVideoRef.current;
-        if (!v) return;
-        if (isMuted) {
-          v.muted = false;
-          v.volume = 0.7;
-          setIsMuted(false);
-        } else {
-          v.muted = true;
-          v.volume = 0;
-          setIsMuted(true);
-        }
-      } else {
-        const p = playerRef.current;
-        if (!p) return;
-        if (isMuted) {
-          p.setVolume(0.7);
-          setIsMuted(false);
-        } else {
-          p.setVolume(0);
-          setIsMuted(true);
-        }
-      }
-      resetHide();
-    },
-    [isMuted, resetHide]
-  );
-
+  /* ─── Seek on progress bar click ─── */
   const handleSeek = useCallback(
     (e: React.MouseEvent) => {
       e.stopPropagation();
+      const v = videoRef.current;
       const bar = progressBarRef.current;
-      if (!bar || !duration) return;
-      const rect = bar.getBoundingClientRect();
-      const pct = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
-      if (IS_IN_APP) {
-        const v = nativeVideoRef.current;
-        if (!v) return;
-        v.currentTime = pct * duration;
-      } else {
-        const p = playerRef.current;
-        if (!p) return;
-        p.setCurrentTime(pct * duration);
-      }
-      setProgress(pct * 100);
-      resetHide();
-    },
-    [duration, resetHide]
-  );
+      if (!v || !bar || !duration) return;
 
-  const fmt = (s: number) => {
-    const m = Math.floor(s / 60);
-    const sec = Math.floor(s % 60);
-    return `${m}:${sec.toString().padStart(2, "0")}`;
-  };
+      const rect = bar.getBoundingClientRect();
+      const clickPct = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+
+      // Reverse the visual mapping to get real time
+      let realPct: number;
+      if (clickPct <= 0.75) {
+        realPct = (clickPct / 0.75) * 0.5;
+      } else {
+        realPct = 0.5 + ((clickPct - 0.75) / 0.25) * 0.5;
+      }
+
+      v.currentTime = realPct * duration;
+      setRealProgress(realPct * 100);
+    },
+    [duration]
+  );
 
   return (
     <TextureSection
@@ -248,189 +144,80 @@ const HeroSection = () => {
           </div>
 
           {/* ─── RIGHT: Video ─── */}
-          <div
-            className="fade-item order-2 w-full max-w-xl mx-auto lg:max-w-none"
-            onMouseMove={resetHide}
-            onMouseEnter={() => setShowControls(true)}
-          >
+          <div className="fade-item order-2 w-full max-w-xl mx-auto lg:max-w-none">
             <div
               className="relative w-full rounded-md overflow-hidden shadow-[0_4px_60px_rgba(201,169,110,0.12)] border border-primary/10 cursor-pointer"
-              onClick={handleVideoClick}
+              onClick={handleClick}
             >
               {/* 16:9 aspect-ratio wrapper */}
               <div className="relative w-full" style={{ paddingBottom: "56.25%" }}>
-                {/* ─── In-app browser: native <video> with Supabase CDN ─── */}
-                {IS_IN_APP ? (
-                  <video
-                    ref={nativeVideoRef}
-                    src={SUPABASE_VIDEO_URL}
-                    autoPlay
-                    muted
-                    loop
-                    playsInline
-                    className="absolute inset-0 w-full h-full object-cover"
-                    onLoadedData={() => setIsReady(true)}
-                    onTimeUpdate={(e) => {
-                      const v = e.currentTarget;
-                      if (v.duration) {
-                        setCurrentTime(v.currentTime);
-                        setDuration(v.duration);
-                        setProgress((v.currentTime / v.duration) * 100);
-                      }
-                    }}
-                    onPlay={() => setIsPlaying(true)}
-                    onPause={() => setIsPlaying(false)}
-                    onEnded={() => {
-                      setIsPlaying(false);
-                      setProgress(100);
-                    }}
-                  />
-                ) : (
-                  /* ─── Normal browser: Vimeo iframe ─── */
-                  <iframe
-                    ref={iframeRef}
-                    src={`https://player.vimeo.com/video/${VIMEO_VIDEO_ID}?autoplay=1&muted=1&loop=1&playsinline=1&controls=0&title=0&byline=0&portrait=0&badge=0&autopause=0`}
-                    allow="autoplay; picture-in-picture; clipboard-write; encrypted-media; web-share"
-                    referrerPolicy="strict-origin-when-cross-origin"
-                    title="vídeo landingpage"
-                    className="absolute inset-0 w-full h-full border-0"
-                  />
-                )}
+                {/* Native video — NO autoPlay attribute (triggered via JS) */}
+                <video
+                  ref={videoRef}
+                  src={VIDEO_URL}
+                  playsInline
+                  muted
+                  loop
+                  preload="auto"
+                  className="absolute inset-0 w-full h-full object-cover"
+                  onTimeUpdate={onTimeUpdate}
+                  onPlay={() => setIsPlaying(true)}
+                  onPause={() => setIsPlaying(false)}
+                  onEnded={() => {
+                    setIsPlaying(false);
+                    setRealProgress(100);
+                  }}
+                />
 
-                {/* Click overlay (captures clicks above the iframe/video) */}
+                {/* Click overlay */}
                 <div className="absolute inset-0 z-10" />
 
-                {/* Unmute overlay button — shown when video is muted and ready */}
+                {/* Unmute button — small, circular, centered */}
                 {isMuted && isReady && (
                   <div className="absolute inset-0 z-20 flex items-center justify-center pointer-events-none">
-                    <div className="flex flex-col items-center gap-2 animate-pulse">
-                      <div className="w-14 h-14 md:w-16 md:h-16 rounded-full bg-black/50 backdrop-blur-sm flex items-center justify-center border border-primary/30 shadow-[0_0_20px_rgba(201,169,110,0.25)]">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="hsl(39,40%,60%)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                          <polygon points="11,5 6,9 2,9 2,15 6,15 11,19" fill="hsl(39,40%,60%)" />
-                          <line x1="23" y1="9" x2="17" y2="15" />
-                          <line x1="17" y1="9" x2="23" y2="15" />
-                        </svg>
-                      </div>
-                      <span className="font-editorial italic text-foreground/80 text-[11px] tracking-wider bg-black/50 backdrop-blur-sm px-3 py-1 rounded-full">
-                        Toque para ativar o som
-                      </span>
-                    </div>
-                  </div>
-                )}
-
-                {/* Loading spinner — auto-dismissed after 5s timeout */}
-                {!isReady && (
-                  <div className="absolute inset-0 z-20 flex items-center justify-center bg-[#0a0505] transition-opacity duration-500">
-                    <div className="flex flex-col items-center gap-3">
-                      <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
-                      <span className="font-editorial italic text-foreground/40 text-xs tracking-[0.2em]">
-                        Carregando...
-                      </span>
-                    </div>
-                  </div>
-                )}
-
-                {/* Ended overlay */}
-                {!isPlaying && progress >= 99 && (
-                  <div className="absolute inset-0 z-20 flex items-center justify-center bg-black/50 backdrop-blur-sm">
-                    <div className="flex flex-col items-center gap-2">
+                    <div
+                      className="w-12 h-12 rounded-full bg-black/60 backdrop-blur-sm flex items-center justify-center border border-white/15 shadow-lg"
+                      style={{ animation: "pulse-gentle 2s ease-in-out infinite" }}
+                    >
                       <svg
-                        width="36"
-                        height="36"
+                        width="20"
+                        height="20"
                         viewBox="0 0 24 24"
                         fill="none"
-                        stroke="hsl(39,40%,60%)"
-                        strokeWidth="1.5"
+                        stroke="rgba(255,255,255,0.85)"
+                        strokeWidth="2"
                         strokeLinecap="round"
                         strokeLinejoin="round"
                       >
-                        <path d="M21 12a9 9 0 1 1-6.22-8.56" />
-                        <polyline points="21 3 21 9 15 9" />
+                        <polygon points="11,5 6,9 2,9 2,15 6,15 11,19" fill="rgba(255,255,255,0.85)" />
+                        <line x1="23" y1="9" x2="17" y2="15" />
+                        <line x1="17" y1="9" x2="23" y2="15" />
                       </svg>
-                      <span className="font-editorial italic text-foreground text-xs tracking-wider">
-                        Assistir novamente
-                      </span>
                     </div>
+                  </div>
+                )}
+
+                {/* Loading spinner */}
+                {!isReady && (
+                  <div className="absolute inset-0 z-20 flex items-center justify-center bg-[#0a0505]">
+                    <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
                   </div>
                 )}
               </div>
 
-              {/* ─── Controls ─── */}
+              {/* ─── Progress bar (always visible, minimal) ─── */}
               <div
-                className={`absolute bottom-0 left-0 right-0 z-30 transition-all duration-500 ${
-                  showControls
-                    ? "opacity-100 translate-y-0"
-                    : "opacity-0 translate-y-2"
-                }`}
-                style={{
-                  background:
-                    "linear-gradient(to top, rgba(10,5,5,0.95) 0%, rgba(10,5,5,0.5) 70%, transparent 100%)",
-                  padding: "1.5rem 0.75rem 0.5rem",
-                }}
+                ref={progressBarRef}
+                className="absolute bottom-0 left-0 right-0 z-30 h-[3px] bg-white/10 cursor-pointer"
+                onClick={handleSeek}
               >
-                {/* Progress */}
                 <div
-                  ref={progressBarRef}
-                  className="group w-full h-1 bg-white/10 rounded-full cursor-pointer mb-2 relative hover:h-1.5 transition-all duration-200"
-                  onClick={handleSeek}
-                >
-                  <div
-                    className="absolute top-0 left-0 h-full rounded-full"
-                    style={{
-                      width: `${progress}%`,
-                      background:
-                        "linear-gradient(90deg, hsl(39,40%,60%), hsl(39,50%,70%))",
-                    }}
-                  />
-                  <div
-                    className="absolute top-1/2 -translate-y-1/2 w-2.5 h-2.5 rounded-full bg-primary shadow-[0_0_6px_rgba(201,169,110,0.5)] opacity-0 group-hover:opacity-100 transition-opacity duration-200"
-                    style={{ left: `calc(${progress}% - 5px)` }}
-                  />
-                </div>
-
-                {/* Buttons row */}
-                <div className="flex items-center gap-3">
-                  <button
-                    onClick={togglePlay}
-                    className="text-foreground hover:text-primary transition-colors p-0.5"
-                    aria-label={isPlaying ? "Pausar" : "Reproduzir"}
-                  >
-                    {isPlaying ? (
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                        <rect x="6" y="4" width="4" height="16" rx="1" />
-                        <rect x="14" y="4" width="4" height="16" rx="1" />
-                      </svg>
-                    ) : (
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                        <polygon points="6,4 20,12 6,20" />
-                      </svg>
-                    )}
-                  </button>
-
-                  <button
-                    onClick={toggleMute}
-                    className="text-foreground hover:text-primary transition-colors p-0.5"
-                    aria-label={isMuted ? "Ativar som" : "Silenciar"}
-                  >
-                    {isMuted ? (
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <polygon points="11,5 6,9 2,9 2,15 6,15 11,19" fill="currentColor" />
-                        <line x1="23" y1="9" x2="17" y2="15" />
-                        <line x1="17" y1="9" x2="23" y2="15" />
-                      </svg>
-                    ) : (
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <polygon points="11,5 6,9 2,9 2,15 6,15 11,19" fill="currentColor" />
-                        <path d="M15.54 8.46a5 5 0 0 1 0 7.07" />
-                        <path d="M19.07 4.93a10 10 0 0 1 0 14.14" />
-                      </svg>
-                    )}
-                  </button>
-
-                  <span className="font-readable text-foreground/50 text-[10px] tabular-nums tracking-wider ml-auto">
-                    {fmt(currentTime)} / {fmt(duration)}
-                  </span>
-                </div>
+                  className="h-full rounded-r-full transition-[width] duration-200 ease-linear"
+                  style={{
+                    width: `${visualProgress}%`,
+                    background: "linear-gradient(90deg, hsl(39,40%,60%), hsl(39,50%,70%))",
+                  }}
+                />
               </div>
             </div>
           </div>
@@ -441,6 +228,14 @@ const HeroSection = () => {
           </div>
         </div>
       </div>
+
+      {/* Gentle pulse animation for unmute button */}
+      <style>{`
+        @keyframes pulse-gentle {
+          0%, 100% { transform: scale(1); opacity: 0.9; }
+          50% { transform: scale(1.08); opacity: 1; }
+        }
+      `}</style>
     </TextureSection>
   );
 };
