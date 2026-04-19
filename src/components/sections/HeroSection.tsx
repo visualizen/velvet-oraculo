@@ -82,6 +82,15 @@ const HeroSection = () => {
     };
   }, []);
 
+  /* ─── Force playsinline on native video (iOS/TikTok) ─── */
+  useEffect(() => {
+    const v = nativeVideoRef.current;
+    if (!v) return;
+    v.setAttribute("playsinline", "");
+    v.setAttribute("webkit-playsinline", "true");
+    v.setAttribute("x-webkit-airplay", "deny");
+    v.playsInline = true;
+  }, []);
   /* ─── Controls auto-hide ─── */
   const resetHide = useCallback(() => {
     setShowControls(true);
@@ -245,8 +254,6 @@ const HeroSection = () => {
                     muted
                     loop
                     playsInline
-                    // @ts-ignore
-                    webkit-playsinline="true"
                     className="absolute inset-0 w-full h-full object-cover"
                     onLoadedData={() => setIsReady(true)}
                     onTimeUpdate={(e) => {
@@ -269,14 +276,10 @@ const HeroSection = () => {
                   <iframe
                     ref={iframeRef}
                     src={`https://player.vimeo.com/video/${VIMEO_VIDEO_ID}?autoplay=1&muted=1&loop=1&playsinline=1&controls=0&title=0&byline=0&portrait=0&badge=0&autopause=0`}
-                    allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media; web-share"
+                    allow="autoplay; picture-in-picture; clipboard-write; encrypted-media; web-share"
                     referrerPolicy="strict-origin-when-cross-origin"
                     title="vídeo landingpage"
                     className="absolute inset-0 w-full h-full border-0"
-                    allowFullScreen
-                    playsInline
-                    // @ts-ignore
-                    webkit-playsinline="true"
                   />
                 )}
 
