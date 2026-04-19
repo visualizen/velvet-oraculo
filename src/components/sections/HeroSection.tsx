@@ -6,21 +6,12 @@ import CTAButton from "../CTAButton";
 const VIDEO_URL =
   "https://gvhqihdqxqiiokyhteba.supabase.co/storage/v1/object/public/videos/video-landingpage.mp4";
 
-/* Detect TikTok webview (allowsInlineMediaPlayback = false) */
-const IS_TIKTOK = (() => {
-  if (typeof navigator === "undefined") return false;
-  const ua = navigator.userAgent || "";
-  return /BytedanceWebview|TikTok|Musical_ly/i.test(ua);
-})();
-
 const HeroSection = () => {
   const videoRef = useRef<HTMLVideoElement>(null);
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const hiddenVideoRef = useRef<HTMLVideoElement | null>(null);
-  const rafRef = useRef<number>(0);
   const progressBarRef = useRef<HTMLDivElement>(null);
 
   const [isMuted, setIsMuted] = useState(true);
+  const [isPlaying, setIsPlaying] = useState(false);
   const [isReady, setIsReady] = useState(false);
   const [realProgress, setRealProgress] = useState(0);
   const [duration, setDuration] = useState(0);
@@ -31,102 +22,73 @@ const HeroSection = () => {
       ? (realProgress / 50) * 75
       : 75 + ((realProgress - 50) / 50) * 25;
 
-  /* ─── TikTok: canvas-based video rendering (bypasses native player) ─── */
+  /* ─── Bytedance / TikTok Webview Hacks ─── */
   useEffect(() => {
-    if (!IS_TIKTOK) return;
+    const v = videoRef.current;
+    if (!v) return;
 
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-
-    // Create a HIDDEN video element — NOT rendered in the visible DOM
-    const video = document.createElement("video");
-    video.crossOrigin = "anonymous";
-    video.src = VIDEO_URL;
-    video.muted = true;
-    video.loop = true;
-    video.playsInline = true;
-    video.setAttribute("playsinline", "");
-    video.setAttribute("webkit-playsinline", "true");
-    video.preload = "auto";
-
-    // Hide it completely but keep in DOM (some browsers need it attached)
-    video.style.cssText =
-      "position:fixed;top:-9999px;left:-9999px;width:1px;height:1px;opacity:0;pointer-events:none;";
-    document.body.appendChild(video);
-
-    hiddenVideoRef.current = video;
-
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
-
-    // Draw video frames to canvas
-    const drawFrame = () => {
-      if (video.readyState >= 2) {
-        // Set canvas size to match video on first frame
-        if (canvas.width !== video.videoWidth && video.videoWidth > 0) {
-          canvas.width = video.videoWidth;
-          canvas.height = video.videoHeight;
-        }
-        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-      }
-
-      // Update progress
-      if (video.duration) {
-        setRealProgress((video.currentTime / video.duration) * 100);
-        setDuration(video.duration);
-      }
-
-      rafRef.current = requestAnimationFrame(drawFrame);
+    // React might strip custom attributes, so we apply them directly to the DOM.
+    // These are specifically for Tencent X5 and Bytedance WebViews (TikTok)
+    // to force "same-layer" rendering and inline playback instead of native fullscreen.
+    v.setAttribute("x5-video-player-type", "h5"); // Force h5 player instead of native
+    v.setAttribute("x5-video-player-fullscreen", "false"); // Disable X5 fullscreen
+    v.setAttribute("x5-playsinline", "true");
+    v.setAttribute("webkit-playsinline", "true");
+    v.setAttribute("playsinline", "true");
+    v.setAttribute("x-webkit-airplay", "deny");
+    
+    // Attempt programmatic play to ensure we capture the state
+    const tryPlay = () => {
+      v.play().then(() => {
+        setIsPlaying(true);
+      }).catch(() => {
+        setIsPlaying(false);
+      });
     };
 
-    video.addEventListener("canplay", () => {
+    if (v.readyState >= 3) {
       setIsReady(true);
-      video.play().catch(() => {});
-      drawFrame();
-    }, { once: true });
-
-    // If already ready
-    if (video.readyState >= 3) {
-      setIsReady(true);
-      video.play().catch(() => {});
-      drawFrame();
+      tryPlay();
+    } else {
+      v.addEventListener("canplay", () => {
+        setIsReady(true);
+        tryPlay();
+      }, { once: true });
     }
 
+    const onPlay = () => setIsPlaying(true);
+    const onPause = () => setIsPlaying(false);
+    
+    v.addEventListener("play", onPlay);
+    v.addEventListener("pause", onPause);
+
     return () => {
-      cancelAnimationFrame(rafRef.current);
-      video.pause();
-      video.src = "";
-      if (document.body.contains(video)) {
-        document.body.removeChild(video);
-      }
-      hiddenVideoRef.current = null;
+      v.removeEventListener("play", onPlay);
+      v.removeEventListener("pause", onPause);
     };
   }, []);
 
-  /* ─── Get the active video element (hidden for TikTok, visible for others) ─── */
-  const getVideo = useCallback(() => {
-    return IS_TIKTOK ? hiddenVideoRef.current : videoRef.current;
-  }, []);
-
-  /* ─── Click: unmute or toggle play ─── */
+  /* ─── Click: unmute (first tap) or toggle play/pause ─── */
   const handleClick = useCallback(() => {
-    const v = getVideo();
+    const v = videoRef.current;
     if (!v) return;
 
     if (isMuted) {
       v.muted = false;
       v.volume = 0.7;
       setIsMuted(false);
+      // Ensure it plays if it was blocked by autoplay policies
+      if (v.paused) v.play().catch(() => {});
     } else {
       v.paused ? v.play().catch(() => {}) : v.pause();
     }
-  }, [isMuted, getVideo]);
+  }, [isMuted]);
 
   /* ─── Seek ─── */
   const handleSeek = useCallback(
     (e: React.MouseEvent) => {
       e.stopPropagation();
-      const v = getVideo();
+      const v = videoRef.current;
       const bar = progressBarRef.current;
       if (!v || !bar || !duration) return;
       const rect = bar.getBoundingClientRect();
@@ -138,7 +100,7 @@ const HeroSection = () => {
       v.currentTime = realPct * duration;
       setRealProgress(realPct * 100);
     },
-    [duration, getVideo]
+    [duration]
   );
 
   return (
@@ -175,49 +137,52 @@ const HeroSection = () => {
               className="relative w-full rounded-md overflow-hidden shadow-[0_4px_60px_rgba(201,169,110,0.12)] border border-primary/10 cursor-pointer"
               onClick={handleClick}
             >
-              {/* 16:9 wrapper */}
               <div className="relative w-full bg-[#0a0505]" style={{ paddingBottom: "56.25%" }}>
-                {IS_TIKTOK ? (
-                  /* ─── TikTok: canvas (video frames drawn via JS) ─── */
-                  <canvas
-                    ref={canvasRef}
-                    className="absolute inset-0 w-full h-full object-cover"
-                  />
-                ) : (
-                  /* ─── Normal: standard <video> ─── */
-                  <video
-                    ref={videoRef}
-                    src={VIDEO_URL}
-                    autoPlay
-                    muted
-                    loop
-                    playsInline
-                    preload="auto"
-                    className="absolute inset-0 w-full h-full object-cover"
-                    onLoadedData={() => setIsReady(true)}
-                    onTimeUpdate={() => {
-                      const v = videoRef.current;
-                      if (!v || !v.duration) return;
-                      setRealProgress((v.currentTime / v.duration) * 100);
-                      setDuration(v.duration);
-                    }}
-                  />
-                )}
+                {/* 
+                  Native video with all attributes. 
+                  The extra x5 attributes are injected via useEffect. 
+                */}
+                <video
+                  ref={videoRef}
+                  src={VIDEO_URL}
+                  autoPlay
+                  muted
+                  loop
+                  playsInline
+                  preload="auto"
+                  className="absolute inset-0 w-full h-full object-cover"
+                  onTimeUpdate={() => {
+                    const v = videoRef.current;
+                    if (!v || !v.duration) return;
+                    setRealProgress((v.currentTime / v.duration) * 100);
+                    setDuration(v.duration);
+                  }}
+                />
 
                 {/* Click overlay */}
                 <div className="absolute inset-0 z-10" />
 
-                {/* Unmute button */}
-                {isMuted && isReady && (
-                  <div className="absolute inset-0 z-20 flex items-center justify-center pointer-events-none">
-                    <div className="w-12 h-12 rounded-full bg-black/60 backdrop-blur-sm flex items-center justify-center border border-white/15 shadow-lg animate-[pulse-gentle_2s_ease-in-out_infinite]">
-                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.85)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <polygon points="11,5 6,9 2,9 2,15 6,15 11,19" fill="rgba(255,255,255,0.85)" />
-                        <line x1="23" y1="9" x2="17" y2="15" />
-                        <line x1="17" y1="9" x2="23" y2="15" />
-                      </svg>
+                {/* Show unmute button OR large play button if autoplay failed */}
+                {isReady && (
+                   isMuted || !isPlaying ? (
+                    <div className="absolute inset-0 z-20 flex items-center justify-center pointer-events-none">
+                      <div className="w-12 h-12 rounded-full bg-black/60 backdrop-blur-sm flex items-center justify-center border border-white/15 shadow-lg animate-[pulse-gentle_2s_ease-in-out_infinite]">
+                        {!isPlaying ? (
+                          /* Large play icon if video is completely paused/blocked */
+                           <svg width="20" height="20" viewBox="0 0 24 24" fill="rgba(255,255,255,0.85)">
+                             <polygon points="8,5 19,12 8,19" />
+                           </svg>
+                        ) : (
+                          /* Unmute icon if it's playing but muted */
+                          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.85)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <polygon points="11,5 6,9 2,9 2,15 6,15 11,19" fill="rgba(255,255,255,0.85)" />
+                            <line x1="23" y1="9" x2="17" y2="15" />
+                            <line x1="17" y1="9" x2="23" y2="15" />
+                          </svg>
+                        )}
+                      </div>
                     </div>
-                  </div>
+                  ) : null
                 )}
 
                 {/* Loading */}
