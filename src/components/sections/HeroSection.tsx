@@ -4,6 +4,14 @@ import Ornament from "../Ornament";
 import CTAButton from "../CTAButton";
 
 const VIMEO_VIDEO_ID = "1184470820";
+const VIMEO_VIDEO_URL = `https://vimeo.com/${VIMEO_VIDEO_ID}`;
+
+/* Detect restrictive in-app browsers (TikTok, Instagram, Facebook, etc.) */
+const getIsInAppBrowser = () => {
+  if (typeof navigator === "undefined") return false;
+  const ua = navigator.userAgent || "";
+  return /\b(BytedanceWebview|TikTok|Musical_ly|Instagram|FBAN|FBAV|Line\/|Twitter|Snapchat)\b/i.test(ua);
+};
 
 const HeroSection = () => {
   const iframeRef = useRef<HTMLIFrameElement>(null);
@@ -16,11 +24,25 @@ const HeroSection = () => {
   const [duration, setDuration] = useState(0);
   const [currentTime, setCurrentTime] = useState(0);
   const [isReady, setIsReady] = useState(false);
+  const [loadFailed, setLoadFailed] = useState(false);
+  const [isInApp] = useState(getIsInAppBrowser);
   const [showControls, setShowControls] = useState(true);
   const hideTimerRef = useRef<ReturnType<typeof setTimeout>>();
 
-  /* ─── Vimeo SDK ─── */
+  /* ─── Vimeo SDK (skip entirely for in-app browsers) ─── */
   useEffect(() => {
+    if (isInApp) {
+      setLoadFailed(true);
+      return;
+    }
+
+    // Safety timeout: if video doesn't load in 8s, show fallback
+    const timeout = setTimeout(() => {
+      if (!playerRef.current) {
+        setLoadFailed(true);
+      }
+    }, 8000);
+
     const existing = document.querySelector(
       'script[src="https://player.vimeo.com/api/player.js"]'
     );
@@ -32,7 +54,9 @@ const HeroSection = () => {
       playerRef.current = player;
 
       player.ready().then(() => {
+        clearTimeout(timeout);
         setIsReady(true);
+        setLoadFailed(false);
         player.setVolume(0);
         player.play().catch(() => {});
       });
@@ -62,9 +86,10 @@ const HeroSection = () => {
     }
 
     return () => {
+      clearTimeout(timeout);
       playerRef.current?.destroy();
     };
-  }, []);
+  }, [isInApp]);
 
   /* ─── Controls auto-hide ─── */
   const resetHide = useCallback(() => {
@@ -186,21 +211,23 @@ const HeroSection = () => {
             >
               {/* 16:9 aspect-ratio wrapper */}
               <div className="relative w-full" style={{ paddingBottom: "56.25%" }}>
-                {/* Vimeo iframe */}
-                <iframe
-                  ref={iframeRef}
-                  src={`https://player.vimeo.com/video/${VIMEO_VIDEO_ID}?badge=0&autopause=0&player_id=0&app_id=58479&autoplay=1&muted=1&controls=0&title=0&byline=0&portrait=0`}
-                  allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media; web-share"
-                  referrerPolicy="strict-origin-when-cross-origin"
-                  title="vídeo landingpage"
-                  className="absolute inset-0 w-full h-full border-0"
-                />
+                {/* Vimeo iframe (only render if not in restricted browser) */}
+                {!loadFailed && (
+                  <iframe
+                    ref={iframeRef}
+                    src={`https://player.vimeo.com/video/${VIMEO_VIDEO_ID}?badge=0&autopause=0&player_id=0&app_id=58479&autoplay=1&muted=1&controls=0&title=0&byline=0&portrait=0`}
+                    allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media; web-share"
+                    referrerPolicy="strict-origin-when-cross-origin"
+                    title="vídeo landingpage"
+                    className="absolute inset-0 w-full h-full border-0"
+                  />
+                )}
 
                 {/* Click overlay (captures clicks above the iframe) */}
-                <div className="absolute inset-0 z-10" />
+                {!loadFailed && <div className="absolute inset-0 z-10" />}
 
-                {/* Loading */}
-                {!isReady && (
+                {/* Loading spinner (only while video is loading, not failed) */}
+                {!isReady && !loadFailed && (
                   <div className="absolute inset-0 z-20 flex items-center justify-center bg-[#0a0505]">
                     <div className="flex flex-col items-center gap-3">
                       <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
@@ -211,8 +238,36 @@ const HeroSection = () => {
                   </div>
                 )}
 
+                {/* Fallback: thumbnail + play button (in-app browser or timeout) */}
+                {loadFailed && (
+                  <a
+                    href={VIMEO_VIDEO_URL}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="absolute inset-0 z-20 flex items-center justify-center bg-[#0a0505] group"
+                  >
+                    {/* Vimeo thumbnail */}
+                    <img
+                      src={`https://vumbnail.com/${VIMEO_VIDEO_ID}.jpg`}
+                      alt="Vídeo de apresentação"
+                      className="absolute inset-0 w-full h-full object-cover opacity-70 group-hover:opacity-90 transition-opacity duration-500"
+                    />
+                    {/* Play button */}
+                    <div className="relative z-10 flex flex-col items-center gap-3">
+                      <div className="w-16 h-16 md:w-20 md:h-20 rounded-full bg-primary/90 backdrop-blur-sm flex items-center justify-center shadow-[0_0_30px_rgba(201,169,110,0.4)] group-hover:scale-110 transition-transform duration-300">
+                        <svg width="28" height="28" viewBox="0 0 24 24" fill="white">
+                          <polygon points="8,4 20,12 8,20" />
+                        </svg>
+                      </div>
+                      <span className="font-editorial italic text-foreground text-xs tracking-wider bg-black/50 backdrop-blur-sm px-3 py-1 rounded-full">
+                        Toque para assistir
+                      </span>
+                    </div>
+                  </a>
+                )}
+
                 {/* Ended overlay */}
-                {!isPlaying && progress >= 99 && (
+                {!loadFailed && !isPlaying && progress >= 99 && (
                   <div className="absolute inset-0 z-20 flex items-center justify-center bg-black/50 backdrop-blur-sm">
                     <div className="flex flex-col items-center gap-2">
                       <svg
