@@ -1,4 +1,3 @@
-import { useEffect, useRef, useState } from "react";
 import TextureSection from "../TextureSection";
 import Ornament from "../Ornament";
 import CTAButton from "../CTAButton";
@@ -26,35 +25,6 @@ interface PricingSectionProps {
 }
 
 const PricingSection = ({ onOpenCheckout }: PricingSectionProps) => {
-  const sectionRef = useRef<HTMLDivElement>(null);
-  const [hasTriggered, setHasTriggered] = useState(false);
-
-  // Auto-open checkout modal 2s after user scrolls to this section
-  useEffect(() => {
-    if (!onOpenCheckout) return;
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        const entry = entries[0];
-        if (entry.isIntersecting && !hasTriggered) {
-          setHasTriggered(true);
-          const timer = setTimeout(() => {
-            onOpenCheckout();
-          }, 2000);
-          return () => clearTimeout(timer);
-        }
-      },
-      { threshold: 0.3 }
-    );
-
-    const el = sectionRef.current;
-    if (el) observer.observe(el);
-
-    return () => {
-      if (el) observer.unobserve(el);
-    };
-  }, [onOpenCheckout, hasTriggered]);
-
   return (
     <TextureSection
       id="preco"
@@ -62,25 +32,22 @@ const PricingSection = ({ onOpenCheckout }: PricingSectionProps) => {
       overlay="rgba(18,8,8,0.82)"
       className="py-20 md:py-28"
     >
-      <div ref={sectionRef} className="container mx-auto px-6 max-w-2xl text-center text-shadow-dark">
-        {/* Discount badge */}
-        <div className="fade-item flex justify-center mb-6">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-red-500/15 border border-red-400/25">
-            <span className="text-red-400 text-sm font-bold font-display tracking-wider animate-pulse">
-              🔥 {DISCOUNT_PERCENT}% OFF
-            </span>
-          </div>
-        </div>
+      <div className="container mx-auto px-6 max-w-2xl text-center text-shadow-dark">
 
+        {/* Section title */}
         <p className="fade-item font-editorial italic text-primary text-sm tracking-[0.3em] uppercase mb-4">
-          Oferta especial de lançamento
+          ✦ Oferta especial de lançamento ✦
         </p>
-        <h2 className="fade-item font-display text-2xl md:text-3xl lg:text-4xl text-foreground mb-8">
-          Tudo que está incluído
+        <h2 className="fade-item font-display text-2xl md:text-3xl lg:text-4xl text-foreground mb-3 leading-tight">
+          Sua jornada do básico ao avançado
         </h2>
+        <p className="fade-item font-editorial italic text-foreground/60 text-base md:text-lg mb-6">
+          Tudo que está incluído no portal
+        </p>
         <Ornament className="fade-item mb-8" />
 
-        <div className="fade-item space-y-3 mb-8">
+        {/* Value stack */}
+        <div className="fade-item space-y-3 mb-10">
           {valueStack.map((v, i) => (
             <div key={i} className="flex justify-between items-center px-4 py-2 border-b border-primary/10">
               <span className="font-body text-foreground text-base text-left">{v.item}</span>
@@ -90,15 +57,15 @@ const PricingSection = ({ onOpenCheckout }: PricingSectionProps) => {
         </div>
 
         {/* Pricing block with discount */}
-        <div className="fade-item mb-6 relative">
-          {/* Original price struck through */}
+        <div className="fade-item mb-8 relative">
+          {/* Total value struck through */}
           <div className="flex items-center justify-center gap-3 mb-2">
             <span className="font-body text-foreground/40 text-sm line-through">Valor total: R$ 2.785</span>
           </div>
 
           <p className="font-editorial italic text-primary text-lg mb-3">Por apenas</p>
 
-          {/* Original price with strikethrough */}
+          {/* Original price with strikethrough + discount badge */}
           <div className="flex items-center justify-center gap-3 mb-2">
             <span className="font-display text-foreground/35 text-2xl line-through decoration-red-400/60 decoration-2">
               R$ {ORIGINAL_PRICE}
@@ -114,15 +81,57 @@ const PricingSection = ({ onOpenCheckout }: PricingSectionProps) => {
           <p className="font-body text-foreground/60 text-base mt-3">ou R$ {ACTUAL_PRICE} à vista</p>
         </div>
 
-        <div className="fade-item mb-8">
+        {/* CTA */}
+        <div className="fade-item mb-10">
           <CTAButton text="ENTRAR NO PORTAL AGORA" onClick={onOpenCheckout} />
         </div>
 
-        <div className="fade-item p-4 rounded-sm border border-primary/20 bg-primary/5">
-          <p className="font-editorial italic text-primary text-sm">🛡️ Garantia incondicional de 7 dias</p>
-          <p className="font-body text-foreground/70 text-sm mt-1">
-            Se por qualquer motivo você sentir que o curso não é para você, devolvemos 100% do seu investimento.
-          </p>
+        {/* ═══════════════════════════════════════════════════════════
+            GARANTIA DE 7 DIAS — Bloco grande, visível, com confiança
+           ═══════════════════════════════════════════════════════════ */}
+        <div className="fade-item relative overflow-hidden rounded-md border-2 border-primary/30 bg-gradient-to-b from-primary/8 to-primary/3">
+          {/* Top accent line */}
+          <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-primary/60 to-transparent" />
+
+          <div className="px-6 sm:px-10 py-8 sm:py-10">
+            {/* Shield icon */}
+            <div className="flex justify-center mb-4">
+              <div
+                className="w-16 h-16 rounded-full border-2 border-primary/40 flex items-center justify-center"
+                style={{
+                  background: "radial-gradient(circle, rgba(201,169,110,0.12) 0%, transparent 70%)",
+                }}
+              >
+                <span className="text-3xl">🛡️</span>
+              </div>
+            </div>
+
+            <h3 className="font-display text-lg sm:text-xl text-primary mb-2 tracking-wider">
+              GARANTIA TOTAL DE 7 DIAS
+            </h3>
+            <Ornament className="mb-4 opacity-40" />
+            <p className="font-editorial italic text-foreground/80 text-base sm:text-lg leading-relaxed mb-3 max-w-md mx-auto">
+              Risco zero para você começar.
+            </p>
+            <p className="font-body text-foreground/60 text-sm sm:text-base leading-relaxed max-w-lg mx-auto">
+              Se dentro de 7 dias você sentir que o curso não é para você — por{" "}
+              <em className="text-foreground/75">qualquer motivo</em> — devolvemos{" "}
+              <strong className="text-primary/90">100% do seu investimento</strong>. Sem perguntas, sem burocracia. Você não tem nada a perder.
+            </p>
+
+            {/* Trust details */}
+            <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-6 mt-6 pt-5 border-t border-primary/10">
+              <span className="font-body text-foreground/45 text-xs sm:text-sm flex items-center gap-1.5">
+                <span className="text-primary/60">✦</span> Devolução integral
+              </span>
+              <span className="font-body text-foreground/45 text-xs sm:text-sm flex items-center gap-1.5">
+                <span className="text-primary/60">✦</span> Sem perguntas
+              </span>
+              <span className="font-body text-foreground/45 text-xs sm:text-sm flex items-center gap-1.5">
+                <span className="text-primary/60">✦</span> Pagamento seguro via Kiwify
+              </span>
+            </div>
+          </div>
         </div>
       </div>
     </TextureSection>
