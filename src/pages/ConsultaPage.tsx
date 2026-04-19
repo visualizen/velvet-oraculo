@@ -106,7 +106,7 @@ const ConsultaPage = () => {
           `Nome completo: ${formData.name}\n` +
           `Data de nascimento: ${formattedDate}`
       );
-      window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${message}`, "_blank");
+      window.location.href = `https://wa.me/${WHATSAPP_NUMBER}?text=${message}`;
     }
   };
 

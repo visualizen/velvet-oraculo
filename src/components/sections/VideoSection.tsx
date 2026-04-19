@@ -37,7 +37,6 @@ const VideoSection = () => {
         loop: false,
         controls: false,
         responsive: true,
-        dnt: true,
         title: false,
         byline: false,
         portrait: false,
