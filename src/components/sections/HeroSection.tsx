@@ -11,7 +11,8 @@ const HeroSection = () => {
   const playerRef = useRef<Player | null>(null);
   const progressBarRef = useRef<HTMLDivElement>(null);
 
-  const [isMuted, setIsMuted] = useState(true);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [hasStarted, setHasStarted] = useState(false);
   const [isReady, setIsReady] = useState(false);
   const [realProgress, setRealProgress] = useState(0);
   const [duration, setDuration] = useState(0);
@@ -30,41 +31,59 @@ const HeroSection = () => {
     const player = new Player(iframe);
     playerRef.current = player;
 
-    player.on("loaded", () => {
+    player.ready().then(() => {
       setIsReady(true);
+      // Force muted autoplay
+      player.setMuted(true);
+      player.setVolume(0);
+      player.play().then(() => {
+        setIsPlaying(true);
+        setHasStarted(true);
+      }).catch(() => {
+        // Autoplay blocked — user will need to tap
+        setIsPlaying(false);
+      });
     });
+
+    player.on("play", () => setIsPlaying(true));
+    player.on("pause", () => setIsPlaying(false));
 
     player.on("timeupdate", (data: { seconds: number; duration: number }) => {
       setRealProgress((data.seconds / data.duration) * 100);
       setDuration(data.duration);
     });
 
-    player.ready().then(() => {
-      setIsReady(true);
-    });
-
     return () => {
-      player.off("loaded");
+      player.off("play");
+      player.off("pause");
       player.off("timeupdate");
       playerRef.current = null;
     };
   }, []);
 
-  /* ─── Click: unmute (first tap) or toggle play/pause ─── */
+  /* ─── Click: first tap starts, second tap unmutes ─── */
   const handleClick = useCallback(() => {
     const player = playerRef.current;
     if (!player) return;
 
-    if (isMuted) {
+    if (!hasStarted || !isPlaying) {
+      // First interaction or paused: play with sound
       player.setMuted(false);
       player.setVolume(0.7);
-      setIsMuted(false);
+      player.play();
+      setHasStarted(true);
+      setIsPlaying(true);
     } else {
+      // Already playing: toggle pause
       player.getPaused().then((paused) => {
-        paused ? player.play() : player.pause();
+        if (paused) {
+          player.play();
+        } else {
+          player.pause();
+        }
       });
     }
-  }, [isMuted]);
+  }, [hasStarted, isPlaying]);
 
   /* ─── Seek ─── */
   const handleSeek = useCallback(
@@ -79,7 +98,6 @@ const HeroSection = () => {
         0,
         Math.min(1, (e.clientX - rect.left) / rect.width)
       );
-      // Reverse the accelerated mapping
       const realPct =
         clickPct <= 0.75
           ? (clickPct / 0.75) * 0.5
@@ -90,7 +108,7 @@ const HeroSection = () => {
     [duration]
   );
 
-  /* ─── Vimeo iframe URL: background=1 is the key ─── */
+  /* ─── Vimeo URL ─── */
   const vimeoSrc = `https://player.vimeo.com/video/${VIMEO_ID}?background=1&autoplay=1&loop=1&muted=1&playsinline=1`;
 
   return (
@@ -125,7 +143,7 @@ const HeroSection = () => {
             </div>
           </div>
 
-          {/* ─── RIGHT: Vimeo Video (background mode) ─── */}
+          {/* ─── RIGHT: Vimeo Video ─── */}
           <div className="fade-item order-2 w-full max-w-xl mx-auto lg:max-w-none">
             <div
               className="relative w-full rounded-md overflow-hidden shadow-[0_4px_60px_rgba(201,169,110,0.12)] border border-primary/10 cursor-pointer"
@@ -152,62 +170,60 @@ const HeroSection = () => {
                   title="Vídeo de apresentação"
                 />
 
-                {/* Click overlay (captures clicks instead of iframe) */}
+                {/* Click overlay — captures clicks for our custom controls */}
                 <div className="absolute inset-0 z-10" />
 
-                {/* Unmute button */}
-                {isMuted && isReady && (
+                {/* ─── PLAY BUTTON: shown when not playing ─── */}
+                {isReady && !isPlaying && (
                   <div className="absolute inset-0 z-20 flex items-center justify-center pointer-events-none">
-                    <div className="flex flex-col items-center gap-2">
-                      <div className="w-14 h-14 rounded-full bg-black/60 backdrop-blur-sm flex items-center justify-center border border-white/15 shadow-lg animate-[pulse-gentle_2s_ease-in-out_infinite]">
+                    <div className="flex flex-col items-center gap-3">
+                      <div className="w-16 h-16 rounded-full bg-primary/90 flex items-center justify-center shadow-[0_0_30px_rgba(201,169,110,0.4)] animate-[pulse-gentle_2s_ease-in-out_infinite]">
                         <svg
-                          width="24"
-                          height="24"
+                          width="28"
+                          height="28"
                           viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="rgba(255,255,255,0.85)"
-                          strokeWidth="2"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
+                          fill="white"
                         >
-                          <polygon
-                            points="11,5 6,9 2,9 2,15 6,15 11,19"
-                            fill="rgba(255,255,255,0.85)"
-                          />
-                          <line x1="23" y1="9" x2="17" y2="15" />
-                          <line x1="17" y1="9" x2="23" y2="15" />
+                          <polygon points="8,5 19,12 8,19" />
                         </svg>
                       </div>
-                      <span className="font-editorial italic text-foreground/80 text-[11px] tracking-wider bg-black/50 backdrop-blur-sm px-3 py-1 rounded-full">
-                        Toque para ouvir
+                      <span className="font-editorial italic text-foreground text-sm tracking-wider bg-black/60 backdrop-blur-sm px-4 py-1.5 rounded-full">
+                        ▶ Assistir apresentação
                       </span>
                     </div>
                   </div>
                 )}
 
-                {/* Loading */}
+                {/* Loading spinner */}
                 {!isReady && (
                   <div className="absolute inset-0 z-20 flex items-center justify-center bg-[#0a0505]">
-                    <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+                    <div className="flex flex-col items-center gap-3">
+                      <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+                      <span className="font-editorial italic text-foreground/50 text-xs tracking-wider">
+                        Carregando vídeo...
+                      </span>
+                    </div>
                   </div>
                 )}
               </div>
 
               {/* Progress bar */}
-              <div
-                ref={progressBarRef}
-                className="absolute bottom-0 left-0 right-0 z-30 h-[3px] bg-white/10 cursor-pointer"
-                onClick={handleSeek}
-              >
+              {hasStarted && (
                 <div
-                  className="h-full rounded-r-full transition-[width] duration-200 ease-linear"
-                  style={{
-                    width: `${visualProgress}%`,
-                    background:
-                      "linear-gradient(90deg, hsl(39,40%,60%), hsl(39,50%,70%))",
-                  }}
-                />
-              </div>
+                  ref={progressBarRef}
+                  className="absolute bottom-0 left-0 right-0 z-30 h-[3px] bg-white/10 cursor-pointer"
+                  onClick={handleSeek}
+                >
+                  <div
+                    className="h-full rounded-r-full transition-[width] duration-200 ease-linear"
+                    style={{
+                      width: `${visualProgress}%`,
+                      background:
+                        "linear-gradient(90deg, hsl(39,40%,60%), hsl(39,50%,70%))",
+                    }}
+                  />
+                </div>
+              )}
             </div>
           </div>
 

@@ -89,7 +89,7 @@ const PricingSection = ({ onOpenCheckout }: PricingSectionProps) => {
         {/* ═══════════════════════════════════════════════════════════
             GARANTIA DE 7 DIAS — Bloco grande, visível, com confiança
            ═══════════════════════════════════════════════════════════ */}
-        <div className="fade-item relative overflow-hidden rounded-md border-2 border-primary/30 bg-gradient-to-b from-primary/8 to-primary/3">
+        <div className="fade-item relative overflow-hidden rounded-md border-2 border-primary/30 backdrop-blur-md bg-[rgba(10,5,15,0.65)]">
           {/* Top accent line */}
           <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-primary/60 to-transparent" />
 
