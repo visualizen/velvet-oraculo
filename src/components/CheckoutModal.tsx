@@ -5,6 +5,15 @@ import { supabase } from "@/lib/supabase";
 
 const KIWIFY_CHECKOUT_URL = "https://pay.kiwify.com.br/GBx9stV";
 
+/**
+ * Detect if we're inside an in-app browser (TikTok, Instagram, Facebook, etc.)
+ * These browsers restrict window.open and sometimes even window.location redirects.
+ */
+const isInAppBrowser = (): boolean => {
+  const ua = navigator.userAgent || navigator.vendor || "";
+  return /TikTok|Instagram|FBAN|FBAV|Line\//i.test(ua);
+};
+
 interface CheckoutModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -26,6 +35,7 @@ const CheckoutModal = ({ isOpen, onClose }: CheckoutModalProps) => {
   const [phone, setPhone] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
+  const [fallbackUrl, setFallbackUrl] = useState("");
   const [touched, setTouched] = useState<Record<string, boolean>>({});
   const nameRef = useRef<HTMLInputElement>(null);
   const cardRef = useRef<HTMLDivElement>(null);
@@ -36,6 +46,7 @@ const CheckoutModal = ({ isOpen, onClose }: CheckoutModalProps) => {
     setEmail("");
     setPhone("");
     setError("");
+    setFallbackUrl("");
     setTouched({});
     setIsSubmitting(false);
   }, []);
@@ -82,34 +93,6 @@ const CheckoutModal = ({ isOpen, onClose }: CheckoutModalProps) => {
     setTouched((prev) => ({ ...prev, [field]: true }));
   };
 
-  const saveLead = async () => {
-    const lead = {
-      name: name.trim(),
-      email: email.trim().toLowerCase(),
-      phone: phoneDigits,
-      source: "sales-page-cta",
-    };
-
-    // Save to Supabase (non-blocking — redirect is the priority)
-    try {
-      await supabase.from("checkout_leads").insert(lead);
-    } catch {
-      // Silent fail — redirect is the priority
-    }
-
-    // Fallback: also save to localStorage
-    try {
-      const existingLeads = JSON.parse(
-        localStorage.getItem("velvet_leads") || "[]"
-      );
-      existingLeads.push({ ...lead, capturedAt: new Date().toISOString() });
-      localStorage.setItem("velvet_leads", JSON.stringify(existingLeads));
-    } catch {
-      // Silent fail
-    }
-
-    return lead;
-  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -125,26 +108,63 @@ const CheckoutModal = ({ isOpen, onClose }: CheckoutModalProps) => {
     setIsSubmitting(true);
     setError("");
 
+    const lead = {
+      name: name.trim(),
+      email: email.trim().toLowerCase(),
+      phone: phoneDigits,
+      source: "sales-page-cta",
+    };
+
+    // Build Kiwify checkout URL with pre-populated fields
+    const params = new URLSearchParams({
+      name: lead.name,
+      email: lead.email,
+      phone: lead.phone,
+    });
+    const checkoutUrl = `${KIWIFY_CHECKOUT_URL}?${params.toString()}`;
+
+    // Save lead fire-and-forget (non-blocking) so the redirect
+    // happens WITHIN the click gesture — critical for in-app browsers
+    // that only allow navigation from direct user interaction.
     try {
-      const lead = await saveLead();
-
-      // Build Kiwify checkout URL with pre-populated fields
-      const params = new URLSearchParams({
-        name: lead.name,
-        email: lead.email,
-        phone: lead.phone,
-      });
-
-      const checkoutUrl = `${KIWIFY_CHECKOUT_URL}?${params.toString()}`;
-      window.open(checkoutUrl, "_blank");
-
-      // Close modal after redirect
-      setTimeout(() => {
-        onClose();
-      }, 600);
+      supabase.from("checkout_leads").insert(lead).then(() => {});
     } catch {
-      setError("Algo deu errado. Tente novamente.");
-      setIsSubmitting(false);
+      // Silent fail
+    }
+    try {
+      const existingLeads = JSON.parse(
+        localStorage.getItem("velvet_leads") || "[]"
+      );
+      existingLeads.push({ ...lead, capturedAt: new Date().toISOString() });
+      localStorage.setItem("velvet_leads", JSON.stringify(existingLeads));
+    } catch {
+      // Silent fail
+    }
+
+    // === Robust redirect strategy ===
+    // In-app browsers (TikTok, Instagram, etc.) block window.open.
+    // Use window.location.href (same-tab) as primary method.
+    // Fallback: hidden <a> click. Last resort: copy URL prompt.
+
+    try {
+      // Primary: navigate in the same tab
+      window.location.href = checkoutUrl;
+    } catch {
+      // Fallback: create and click a hidden anchor
+      try {
+        const a = document.createElement("a");
+        a.href = checkoutUrl;
+        a.rel = "noopener noreferrer";
+        a.style.display = "none";
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+      } catch {
+        // Last resort: show the URL for manual copy
+        setIsSubmitting(false);
+        setError("Não foi possível redirecionar. Copie o link abaixo:");
+        setFallbackUrl(checkoutUrl);
+      }
     }
   };
 
@@ -282,13 +302,38 @@ const CheckoutModal = ({ isOpen, onClose }: CheckoutModalProps) => {
                 )}
               </div>
 
+
               {error && (
                 <p className="text-red-400/80 text-sm font-body text-center py-1">
                   {error}
                 </p>
               )}
 
-              {/* Submit */}
+              {/* Fallback: show copyable link if redirect was blocked (e.g. TikTok browser) */}
+              {fallbackUrl && (
+                <div className="space-y-2">
+                  <a
+                    href={fallbackUrl}
+                    target="_self"
+                    rel="noopener noreferrer"
+                    className="block w-full text-center bg-primary text-primary-foreground font-display tracking-[0.15em] text-sm font-bold px-6 py-3 rounded-sm border border-primary/50 hover:bg-primary/90 transition-all duration-300"
+                  >
+                    ABRIR CHECKOUT →
+                  </a>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      navigator.clipboard?.writeText(fallbackUrl);
+                      setError("Link copiado! Cole no seu navegador.");
+                    }}
+                    className="w-full text-center font-body text-foreground/50 text-xs underline hover:text-foreground/80 transition-colors py-1"
+                  >
+                    Ou copie o link do checkout
+                  </button>
+                </div>
+              )}
+
+
               <button
                 type="submit"
                 disabled={isSubmitting}

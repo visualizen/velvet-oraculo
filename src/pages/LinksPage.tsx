@@ -39,10 +39,10 @@ const LinksPage = () => {
     overlay="rgba(18,8,8,0.68)"
     className="min-h-screen flex items-center justify-center"
   >
-    <div className="w-full max-w-md mx-auto px-6 py-16 flex flex-col items-center text-shadow-dark">
+    <div className="w-full max-w-md mx-auto px-5 sm:px-6 py-14 sm:py-16 flex flex-col items-center text-shadow-dark safe-padding-x">
       {/* Avatar */}
-      <div className="relative mb-6">
-        <div className="w-28 h-28 rounded-full overflow-hidden border-2 border-primary/60 shadow-[0_0_30px_rgba(201,169,110,0.2)]">
+      <div className="relative mb-5 sm:mb-6">
+        <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-full overflow-hidden border-2 border-primary/60 shadow-[0_0_30px_rgba(201,169,110,0.2)]">
           <img
             src="/images/luisa-avatar.jpg"
             alt="Luísa"
@@ -55,30 +55,30 @@ const LinksPage = () => {
       </div>
 
       {/* Name & Subtitle */}
-      <h1 className="font-display text-2xl md:text-3xl text-foreground text-center mb-1">
+      <h1 className="font-display text-xl sm:text-2xl md:text-3xl text-foreground text-center mb-1">
         Velvet Oráculo
       </h1>
-      <p className="font-italianno text-2xl md:text-3xl text-primary text-center mb-2">
+      <p className="font-italianno text-xl sm:text-2xl md:text-3xl text-primary text-center mb-2">
         Sacerdotisa de Si Mesma
       </p>
-      <Ornament className="mb-8 opacity-60" />
+      <Ornament className="mb-6 sm:mb-8 opacity-60" />
 
       {/* Links */}
-      <div className="w-full space-y-4">
+      <div className="w-full space-y-3 sm:space-y-4">
         {links.map((link, index) => {
           const content = (
             <div
-              className="group w-full flex items-center gap-4 px-5 py-4 rounded-sm border border-primary/20 bg-white/[0.03] backdrop-blur-sm hover:border-primary/50 hover:bg-white/[0.06] hover:shadow-[0_0_25px_rgba(201,169,110,0.15)] transition-all duration-500 cursor-pointer"
+              className="group w-full flex items-center gap-3 sm:gap-4 px-4 sm:px-5 py-3.5 sm:py-4 rounded-sm border border-primary/20 bg-white/[0.03] backdrop-blur-sm hover:border-primary/50 hover:bg-white/[0.06] hover:shadow-[0_0_25px_rgba(201,169,110,0.15)] transition-all duration-500 cursor-pointer"
               style={{ animationDelay: `${index * 0.15}s` }}
             >
-              <span className="text-2xl flex-shrink-0 group-hover:scale-110 transition-transform duration-300">
+              <span className="text-xl sm:text-2xl flex-shrink-0 group-hover:scale-110 transition-transform duration-300">
                 {link.icon}
               </span>
               <div className="flex-1 min-w-0">
-                <p className="font-cinzel text-foreground text-sm md:text-base leading-tight tracking-wide">
+                <p className="font-cinzel text-foreground text-[0.8rem] sm:text-sm md:text-base leading-tight tracking-wide">
                   {link.label}
                 </p>
-                <p className="font-body text-foreground/50 text-sm mt-0.5 truncate">
+                <p className="font-body text-foreground/50 text-xs sm:text-sm mt-0.5 truncate">
                   {link.description}
                 </p>
               </div>
@@ -117,9 +117,9 @@ const LinksPage = () => {
       </div>
 
       {/* Footer */}
-      <div className="mt-12 text-center">
+      <div className="mt-10 sm:mt-12 text-center">
         <Ornament className="opacity-30 mb-4" />
-        <p className="font-body text-foreground/30 text-xs tracking-[0.2em] uppercase">
+        <p className="font-body text-foreground/30 text-[10px] sm:text-xs tracking-[0.2em] uppercase">
           Velvet Oráculo Cartomancia
         </p>
       </div>

@@ -14,7 +14,7 @@ const EbookBioSection = ({ onOpenModal }: EbookBioSectionProps) => (
   >
     <div className="container mx-auto px-5 sm:px-6 max-w-3xl">
       {/* Section Header */}
-      <p className="fade-item font-cinzel text-primary/40 text-[0.58rem] sm:text-[0.62rem] tracking-[0.4em] uppercase text-center mb-3">
+      <p className="fade-item font-cinzel text-primary/40 text-[0.6rem] sm:text-[0.62rem] tracking-[0.4em] uppercase text-center mb-3">
         ✦ Sobre a Autora ✦
       </p>
       <h2 className="fade-item font-editorial italic text-xl sm:text-2xl md:text-[1.75rem] text-foreground text-center mb-3">
@@ -23,7 +23,7 @@ const EbookBioSection = ({ onOpenModal }: EbookBioSectionProps) => (
       <Ornament className="fade-item mb-8 sm:mb-10 opacity-35" />
 
       {/* Photo + Bio Layout */}
-      <div className="fade-item flex flex-col md:flex-row items-center md:items-start gap-7 sm:gap-8 md:gap-10">
+      <div className="fade-item flex flex-col md:flex-row items-center md:items-start gap-6 sm:gap-8 md:gap-10">
         {/* Profile Photo — Portrait */}
         <div className="relative flex-shrink-0 group">
           {/* Gold frame */}
@@ -31,7 +31,7 @@ const EbookBioSection = ({ onOpenModal }: EbookBioSectionProps) => (
           {/* Outer subtle frame */}
           <div className="absolute -inset-2.5 rounded-sm border border-primary/8 opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
 
-          <div className="relative w-36 h-52 sm:w-40 sm:h-56 md:w-44 md:h-[260px] rounded-sm overflow-hidden shadow-[0_4px_24px_rgba(201,169,110,0.08)]">
+          <div className="relative w-32 h-44 sm:w-36 sm:h-52 md:w-44 md:h-[260px] rounded-sm overflow-hidden shadow-[0_4px_24px_rgba(201,169,110,0.08)]">
             <img
               src="/images/luisa-perfil.jpg"
               alt="Luísa, taróloga e autora"
@@ -52,15 +52,15 @@ const EbookBioSection = ({ onOpenModal }: EbookBioSectionProps) => (
         {/* Bio Text */}
         <div className="space-y-3 sm:space-y-4 flex-1 text-center md:text-left">
           {/* Opening quote */}
-          <blockquote className="font-editorial italic text-foreground/50 text-[0.95rem] sm:text-base leading-[1.6] border-l-2 border-primary/20 pl-4 md:pl-5 mb-1">
+          <blockquote className="font-editorial italic text-foreground/50 text-[0.9rem] sm:text-base leading-[1.65] border-l-2 border-primary/20 pl-4 md:pl-5 mb-1 text-left">
             "O tarô não entrou na minha vida como misticismo, mas como a primeira ferramenta que me fez perguntas que eu nunca tinha me feito."
           </blockquote>
 
-          <p className="font-readable text-foreground/60 text-[0.825rem] sm:text-[0.875rem] leading-[1.7]">
+          <p className="font-readable text-foreground/60 text-[0.82rem] sm:text-[0.875rem] leading-[1.75]">
             Me chamo Luísa, sou taróloga há mais de 7 anos. Minha relação com espiritualidade sempre foi intelectual.
             Eu queria entender o porquê das coisas, não apenas acreditar. O tarô foi o primeiro sistema que uniu profundidade, beleza e autonomia.
           </p>
-          <p className="font-readable text-foreground/55 text-[0.825rem] sm:text-[0.875rem] leading-[1.7]">
+          <p className="font-readable text-foreground/55 text-[0.82rem] sm:text-[0.875rem] leading-[1.75]">
             Eu criei este guia porque acredito que toda pessoa merece ter acesso à sua própria sabedoria interior,
             sem depender de ninguém para interpretá-la.
           </p>
@@ -76,7 +76,7 @@ const EbookBioSection = ({ onOpenModal }: EbookBioSectionProps) => (
       <div className="fade-item flex flex-col items-center mt-10 sm:mt-14 gap-2">
         <button
           onClick={onOpenModal}
-          className="inline-block font-cinzel tracking-[0.18em] sm:tracking-[0.22em] text-[0.65rem] sm:text-[0.7rem] font-bold px-6 sm:px-8 py-2.5 sm:py-3 bg-transparent text-primary border border-primary/30 rounded-sm hover:bg-primary/10 hover:border-primary/50 transition-all duration-500 cursor-pointer uppercase"
+          className="inline-block font-cinzel tracking-[0.18em] sm:tracking-[0.22em] text-[0.68rem] sm:text-[0.72rem] font-bold px-7 sm:px-8 py-3 sm:py-3.5 bg-transparent text-primary border border-primary/30 rounded-sm hover:bg-primary/10 hover:border-primary/50 transition-all duration-500 cursor-pointer uppercase"
         >
           Baixar Guia Gratuito
         </button>

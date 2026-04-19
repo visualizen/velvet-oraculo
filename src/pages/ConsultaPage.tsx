@@ -30,11 +30,33 @@ const steps: StepConfig[] = [
   {
     label: "Data de nascimento",
     sublabel: "Para uma leitura mais precisa e pessoal",
-    placeholder: "",
+    placeholder: "DD/MM/AAAA",
     type: "date",
     field: "birthDate",
   },
 ];
+
+/* ── Date mask helper ── */
+const formatDateInput = (raw: string): string => {
+  const digits = raw.replace(/\D/g, "").slice(0, 8);
+  if (digits.length <= 2) return digits;
+  if (digits.length <= 4) return `${digits.slice(0, 2)}/${digits.slice(2)}`;
+  return `${digits.slice(0, 2)}/${digits.slice(2, 4)}/${digits.slice(4)}`;
+};
+
+const isValidDate = (value: string): boolean => {
+  const parts = value.split("/");
+  if (parts.length !== 3) return false;
+  const [d, m, y] = parts;
+  if (d.length !== 2 || m.length !== 2 || y.length !== 4) return false;
+  const day = parseInt(d, 10);
+  const month = parseInt(m, 10);
+  const year = parseInt(y, 10);
+  if (month < 1 || month > 12) return false;
+  if (day < 1 || day > 31) return false;
+  if (year < 1900 || year > new Date().getFullYear()) return false;
+  return true;
+};
 
 const ConsultaPage = () => {
   const [currentStep, setCurrentStep] = useState(0);
@@ -64,6 +86,9 @@ const ConsultaPage = () => {
     const step = steps[currentStep];
     if (!formData[step.field].trim()) return;
 
+    // Validate date on the last step
+    if (step.type === "date" && !isValidDate(formData.birthDate)) return;
+
     if (currentStep < steps.length - 1) {
       setDirection("forward");
       setIsAnimating(true);
@@ -72,9 +97,8 @@ const ConsultaPage = () => {
         setIsAnimating(false);
       }, 300);
     } else {
-      // Format date from YYYY-MM-DD to DD/MM/AAAA
-      const [y, m, d] = formData.birthDate.split("-");
-      const formattedDate = `${d}/${m}/${y}`;
+      // Date is already in DD/MM/AAAA format
+      const formattedDate = formData.birthDate;
 
       const message = encodeURIComponent(
         `Olá, gostaria de uma consulta de tarô\n\n` +
@@ -110,7 +134,9 @@ const ConsultaPage = () => {
 
   const step = steps[currentStep];
   const isLastStep = currentStep === steps.length - 1;
-  const canProceed = formData[step.field].trim().length > 0;
+  const canProceed = step.type === "date"
+    ? isValidDate(formData.birthDate)
+    : formData[step.field].trim().length > 0;
 
   return (
     <TextureSection
@@ -118,7 +144,7 @@ const ConsultaPage = () => {
       overlay="rgba(18,8,8,0.82)"
       className="min-h-screen flex items-center justify-center"
     >
-      <div className="w-full max-w-lg mx-auto px-6 py-16 flex flex-col items-center text-shadow-dark">
+      <div className="w-full max-w-lg mx-auto px-5 sm:px-6 py-16 flex flex-col items-center text-shadow-dark safe-padding-x">
         {/* Header */}
         <p className="font-editorial italic text-primary/70 text-xs tracking-[0.3em] uppercase mb-4">
           ✦ Consulta de Tarô ✦
@@ -152,10 +178,10 @@ const ConsultaPage = () => {
           }`}
         >
           {/* Question */}
-          <h2 className="font-display text-xl md:text-2xl text-foreground text-center mb-2 leading-tight">
+          <h2 className="font-display text-xl sm:text-2xl text-foreground text-center mb-2 leading-tight">
             {step.label}
           </h2>
-          <p className="font-body text-foreground/50 text-sm text-center mb-8">
+          <p className="font-body text-foreground/50 text-sm sm:text-base text-center mb-8">
             {step.sublabel}
           </p>
 
@@ -176,13 +202,17 @@ const ConsultaPage = () => {
             ) : step.type === "date" ? (
               <input
                 ref={inputRef as React.RefObject<HTMLInputElement>}
-                type="date"
+                type="text"
+                inputMode="numeric"
                 value={formData[step.field]}
-                onChange={(e) =>
-                  setFormData((prev) => ({ ...prev, [step.field]: e.target.value }))
-                }
+                onChange={(e) => {
+                  const formatted = formatDateInput(e.target.value);
+                  setFormData((prev) => ({ ...prev, [step.field]: formatted }));
+                }}
                 onKeyDown={handleKeyDown}
-                className="w-full bg-white/[0.04] border border-primary/20 rounded-sm px-5 py-4 text-foreground font-body text-base placeholder:text-foreground/25 focus:outline-none focus:border-primary/50 focus:shadow-[0_0_20px_rgba(201,169,110,0.1)] transition-all duration-300 [color-scheme:dark]"
+                placeholder={step.placeholder}
+                maxLength={10}
+                className="w-full bg-white/[0.04] border border-primary/20 rounded-sm px-5 py-4 text-foreground font-body text-base sm:text-lg text-center tracking-[0.15em] placeholder:text-foreground/25 placeholder:tracking-[0.1em] focus:outline-none focus:border-primary/50 focus:shadow-[0_0_20px_rgba(201,169,110,0.1)] transition-all duration-300"
               />
             ) : (
               <input
@@ -196,6 +226,13 @@ const ConsultaPage = () => {
                 placeholder={step.placeholder}
                 className="w-full bg-white/[0.04] border border-primary/20 rounded-sm px-5 py-4 text-foreground font-body text-base placeholder:text-foreground/25 focus:outline-none focus:border-primary/50 focus:shadow-[0_0_20px_rgba(201,169,110,0.1)] transition-all duration-300"
               />
+            )}
+
+            {/* Date validation hint */}
+            {step.type === "date" && formData.birthDate.length > 0 && !isValidDate(formData.birthDate) && (
+              <p className="text-foreground/30 text-xs text-center mt-2 font-body">
+                Formato: DD/MM/AAAA
+              </p>
             )}
           </div>
         </div>
