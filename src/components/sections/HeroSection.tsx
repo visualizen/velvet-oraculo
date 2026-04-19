@@ -1,32 +1,17 @@
 import { useState, useCallback, useRef, useEffect } from "react";
+import Player from "@vimeo/player";
 import TextureSection from "../TextureSection";
 import Ornament from "../Ornament";
 import CTAButton from "../CTAButton";
 
-const VIDEO_URL =
-  "https://gvhqihdqxqiiokyhteba.supabase.co/storage/v1/object/public/videos/video-landingpage.mp4";
-
-/*
-  TikTok / IG / FB in-app browser detection.
-  These webviews force ANY visible <video> into native fullscreen.
-  Workaround: hidden video in Shadow DOM → canvas rendering + <audio> for sound.
-*/
-const IS_RESTRICTIVE_APP = (() => {
-  if (typeof navigator === "undefined") return false;
-  const ua = navigator.userAgent || "";
-  return /BytedanceWebview|TikTok|Musical_ly|Instagram|FBAN|FBAV/i.test(ua);
-})();
+const VIMEO_ID = "1184470820";
 
 const HeroSection = () => {
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const audioRef = useRef<HTMLAudioElement>(null);
-  const shadowVideoRef = useRef<HTMLVideoElement | null>(null);
-  const rafRef = useRef<number>(0);
+  const iframeRef = useRef<HTMLIFrameElement>(null);
+  const playerRef = useRef<Player | null>(null);
   const progressBarRef = useRef<HTMLDivElement>(null);
 
   const [isMuted, setIsMuted] = useState(true);
-  const [isPlaying, setIsPlaying] = useState(false);
   const [isReady, setIsReady] = useState(false);
   const [realProgress, setRealProgress] = useState(0);
   const [duration, setDuration] = useState(0);
@@ -37,159 +22,47 @@ const HeroSection = () => {
       ? (realProgress / 50) * 75
       : 75 + ((realProgress - 50) / 50) * 25;
 
-  /* ─── TikTok: Shadow DOM video → canvas rendering ─── */
+  /* ─── Initialize Vimeo Player ─── */
   useEffect(() => {
-    if (!IS_RESTRICTIVE_APP) return;
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
+    const iframe = iframeRef.current;
+    if (!iframe) return;
 
-    // Create a shadow host — TikTok's DOM scanner can't see inside closed shadows
-    const shadowHost = document.createElement("div");
-    shadowHost.style.cssText =
-      "width:0;height:0;overflow:hidden;position:fixed;top:-1px;left:-1px;opacity:0;pointer-events:none;z-index:-9999;";
-    document.body.appendChild(shadowHost);
+    const player = new Player(iframe);
+    playerRef.current = player;
 
-    const shadow = shadowHost.attachShadow({ mode: "closed" });
+    player.on("loaded", () => {
+      setIsReady(true);
+    });
 
-    // Create video inside the closed shadow DOM
-    const video = document.createElement("video");
-    video.crossOrigin = "anonymous";
-    video.muted = true;
-    video.loop = true;
-    video.playsInline = true;
-    video.setAttribute("playsinline", "");
-    video.setAttribute("webkit-playsinline", "true");
-    video.preload = "auto";
-    video.style.cssText = "width:1px;height:1px;opacity:0;position:absolute;";
-    shadow.appendChild(video);
-    shadowVideoRef.current = video;
+    player.on("timeupdate", (data: { seconds: number; duration: number }) => {
+      setRealProgress((data.seconds / data.duration) * 100);
+      setDuration(data.duration);
+    });
 
-    // Load the video via blob URL to bypass URL-based detection
-    fetch(VIDEO_URL)
-      .then((res) => res.blob())
-      .then((blob) => {
-        video.src = URL.createObjectURL(blob);
-      })
-      .catch(() => {
-        // Fallback: direct URL
-        video.src = VIDEO_URL;
-      });
-
-    // Draw frames to canvas
-    const drawFrame = () => {
-      if (video.readyState >= 2 && !video.paused) {
-        if (canvas.width !== video.videoWidth && video.videoWidth > 0) {
-          canvas.width = video.videoWidth;
-          canvas.height = video.videoHeight;
-        }
-        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-      }
-
-      if (video.duration) {
-        setRealProgress((video.currentTime / video.duration) * 100);
-        setDuration(video.duration);
-      }
-
-      rafRef.current = requestAnimationFrame(drawFrame);
-    };
-
-    video.addEventListener(
-      "canplay",
-      () => {
-        setIsReady(true);
-        // Auto-play muted inside shadow DOM
-        video
-          .play()
-          .then(() => {
-            setIsPlaying(true);
-            drawFrame();
-          })
-          .catch(() => {
-            // If play fails, show as ready with play button
-            setIsReady(true);
-          });
-      },
-      { once: true }
-    );
+    player.ready().then(() => {
+      setIsReady(true);
+    });
 
     return () => {
-      cancelAnimationFrame(rafRef.current);
-      video.pause();
-      video.src = "";
-      shadowVideoRef.current = null;
-      if (document.body.contains(shadowHost)) {
-        document.body.removeChild(shadowHost);
-      }
+      player.off("loaded");
+      player.off("timeupdate");
+      playerRef.current = null;
     };
   }, []);
 
-  /* ─── Audio progress tracking (TikTok mode — for when unmuted) ─── */
-  useEffect(() => {
-    if (!IS_RESTRICTIVE_APP) return;
-    const audio = audioRef.current;
-    if (!audio) return;
-
-    const onEnded = () => {
-      audio.currentTime = 0;
-      audio.play().catch(() => {});
-    };
-
-    audio.addEventListener("ended", onEnded);
-    return () => audio.removeEventListener("ended", onEnded);
-  }, []);
-
-  /* ─── Click handler ─── */
+  /* ─── Click: unmute (first tap) or toggle play/pause ─── */
   const handleClick = useCallback(() => {
-    if (IS_RESTRICTIVE_APP) {
-      const shadowVideo = shadowVideoRef.current;
-      const audio = audioRef.current;
-
-      if (isMuted) {
-        // First tap: unmute = start audio, sync with shadow video
-        if (audio && shadowVideo) {
-          audio.currentTime = shadowVideo.currentTime;
-          audio.volume = 0.7;
-          audio.play().catch(() => {});
-        }
-        // If shadow video wasn't playing, start it
-        if (shadowVideo && shadowVideo.paused) {
-          shadowVideo.play().catch(() => {});
-          setIsPlaying(true);
-        }
-        setIsMuted(false);
-      } else {
-        // Toggle play/pause
-        if (shadowVideo) {
-          if (shadowVideo.paused) {
-            shadowVideo.play().catch(() => {});
-            if (audio) {
-              audio.currentTime = shadowVideo.currentTime;
-              audio.play().catch(() => {});
-            }
-            setIsPlaying(true);
-          } else {
-            shadowVideo.pause();
-            if (audio) audio.pause();
-            setIsPlaying(false);
-          }
-        }
-      }
-      return;
-    }
-
-    // Normal browser behavior
-    const v = videoRef.current;
-    if (!v) return;
+    const player = playerRef.current;
+    if (!player) return;
 
     if (isMuted) {
-      v.muted = false;
-      v.volume = 0.7;
+      player.setMuted(false);
+      player.setVolume(0.7);
       setIsMuted(false);
-      if (v.paused) v.play().catch(() => {});
     } else {
-      v.paused ? v.play().catch(() => {}) : v.pause();
+      player.getPaused().then((paused) => {
+        paused ? player.play() : player.pause();
+      });
     }
   }, [isMuted]);
 
@@ -197,33 +70,28 @@ const HeroSection = () => {
   const handleSeek = useCallback(
     (e: React.MouseEvent) => {
       e.stopPropagation();
+      const player = playerRef.current;
       const bar = progressBarRef.current;
-      if (!bar || !duration) return;
+      if (!player || !bar || !duration) return;
 
       const rect = bar.getBoundingClientRect();
       const clickPct = Math.max(
         0,
         Math.min(1, (e.clientX - rect.left) / rect.width)
       );
+      // Reverse the accelerated mapping
       const realPct =
         clickPct <= 0.75
           ? (clickPct / 0.75) * 0.5
           : 0.5 + ((clickPct - 0.75) / 0.25) * 0.5;
-      const newTime = realPct * duration;
-
-      if (IS_RESTRICTIVE_APP) {
-        const sv = shadowVideoRef.current;
-        const audio = audioRef.current;
-        if (sv) sv.currentTime = newTime;
-        if (audio && !isMuted) audio.currentTime = newTime;
-      } else {
-        const v = videoRef.current;
-        if (v) v.currentTime = newTime;
-      }
+      player.setCurrentTime(realPct * duration);
       setRealProgress(realPct * 100);
     },
-    [duration, isMuted]
+    [duration]
   );
+
+  /* ─── Vimeo iframe URL: background=1 is the key ─── */
+  const vimeoSrc = `https://player.vimeo.com/video/${VIMEO_ID}?background=1&autoplay=1&loop=1&muted=1&playsinline=1`;
 
   return (
     <TextureSection
@@ -257,116 +125,68 @@ const HeroSection = () => {
             </div>
           </div>
 
-          {/* ─── RIGHT: Video ─── */}
+          {/* ─── RIGHT: Vimeo Video (background mode) ─── */}
           <div className="fade-item order-2 w-full max-w-xl mx-auto lg:max-w-none">
             <div
               className="relative w-full rounded-md overflow-hidden shadow-[0_4px_60px_rgba(201,169,110,0.12)] border border-primary/10 cursor-pointer"
               onClick={handleClick}
             >
+              {/* 16:9 wrapper */}
               <div
                 className="relative w-full bg-[#0a0505]"
                 style={{ paddingBottom: "56.25%" }}
               >
-                {IS_RESTRICTIVE_APP ? (
-                  <>
-                    {/* Canvas: receives frames from the shadow DOM video */}
-                    <canvas
-                      ref={canvasRef}
-                      className="absolute inset-0 w-full h-full object-cover"
-                      style={{ imageRendering: "auto" }}
-                    />
-                    {/* Hidden audio for sound (separate from video) */}
-                    <audio ref={audioRef} src={VIDEO_URL} preload="auto" />
-                  </>
-                ) : (
-                  /* Normal browsers: standard <video> */
-                  <video
-                    ref={videoRef}
-                    src={VIDEO_URL}
-                    autoPlay
-                    muted
-                    loop
-                    playsInline
-                    preload="auto"
-                    className="absolute inset-0 w-full h-full object-cover"
-                    onLoadedData={() => setIsReady(true)}
-                    onPlay={() => setIsPlaying(true)}
-                    onPause={() => setIsPlaying(false)}
-                    onTimeUpdate={() => {
-                      const v = videoRef.current;
-                      if (!v || !v.duration) return;
-                      setRealProgress((v.currentTime / v.duration) * 100);
-                      setDuration(v.duration);
-                    }}
-                  />
-                )}
+                <iframe
+                  ref={iframeRef}
+                  src={vimeoSrc}
+                  allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media"
+                  referrerPolicy="strict-origin-when-cross-origin"
+                  style={{
+                    position: "absolute",
+                    top: 0,
+                    left: 0,
+                    width: "100%",
+                    height: "100%",
+                    border: "none",
+                  }}
+                  title="Vídeo de apresentação"
+                />
 
-                {/* Click overlay */}
+                {/* Click overlay (captures clicks instead of iframe) */}
                 <div className="absolute inset-0 z-10" />
 
-                {/* Unmute / Play overlay */}
-                {(isReady || IS_RESTRICTIVE_APP) && (isMuted || !isPlaying) && (
+                {/* Unmute button */}
+                {isMuted && isReady && (
                   <div className="absolute inset-0 z-20 flex items-center justify-center pointer-events-none">
                     <div className="flex flex-col items-center gap-2">
                       <div className="w-14 h-14 rounded-full bg-black/60 backdrop-blur-sm flex items-center justify-center border border-white/15 shadow-lg animate-[pulse-gentle_2s_ease-in-out_infinite]">
-                        {isMuted ? (
-                          <svg
-                            width="24"
-                            height="24"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="rgba(255,255,255,0.85)"
-                            strokeWidth="2"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                          >
-                            <polygon
-                              points="11,5 6,9 2,9 2,15 6,15 11,19"
-                              fill="rgba(255,255,255,0.85)"
-                            />
-                            <line x1="23" y1="9" x2="17" y2="15" />
-                            <line x1="17" y1="9" x2="23" y2="15" />
-                          </svg>
-                        ) : (
-                          <svg
-                            width="24"
-                            height="24"
-                            viewBox="0 0 24 24"
+                        <svg
+                          width="24"
+                          height="24"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="rgba(255,255,255,0.85)"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        >
+                          <polygon
+                            points="11,5 6,9 2,9 2,15 6,15 11,19"
                             fill="rgba(255,255,255,0.85)"
-                          >
-                            <polygon points="8,5 19,12 8,19" />
-                          </svg>
-                        )}
+                          />
+                          <line x1="23" y1="9" x2="17" y2="15" />
+                          <line x1="17" y1="9" x2="23" y2="15" />
+                        </svg>
                       </div>
-
-                      {isMuted && IS_RESTRICTIVE_APP && (
-                        <span className="font-editorial italic text-foreground/80 text-[11px] tracking-wider bg-black/50 backdrop-blur-sm px-3 py-1 rounded-full mt-1">
-                          Toque para ouvir
-                        </span>
-                      )}
+                      <span className="font-editorial italic text-foreground/80 text-[11px] tracking-wider bg-black/50 backdrop-blur-sm px-3 py-1 rounded-full">
+                        Toque para ouvir
+                      </span>
                     </div>
                   </div>
                 )}
 
-                {/* Equalizer when audio plays (TikTok) */}
-                {IS_RESTRICTIVE_APP && isPlaying && !isMuted && (
-                  <div className="absolute bottom-3 right-3 z-20 flex items-end gap-[3px] h-5 pointer-events-none">
-                    <div className="w-[3px] bg-primary/80 rounded-full animate-[eq1_0.8s_ease-in-out_infinite]" />
-                    <div className="w-[3px] bg-primary/80 rounded-full animate-[eq2_0.6s_ease-in-out_infinite]" />
-                    <div className="w-[3px] bg-primary/80 rounded-full animate-[eq3_0.7s_ease-in-out_infinite]" />
-                    <div className="w-[3px] bg-primary/80 rounded-full animate-[eq4_0.9s_ease-in-out_infinite]" />
-                  </div>
-                )}
-
                 {/* Loading */}
-                {!isReady && !IS_RESTRICTIVE_APP && (
-                  <div className="absolute inset-0 z-20 flex items-center justify-center bg-[#0a0505]">
-                    <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
-                  </div>
-                )}
-
-                {/* Loading for TikTok (while video loads via fetch) */}
-                {IS_RESTRICTIVE_APP && !isReady && (
+                {!isReady && (
                   <div className="absolute inset-0 z-20 flex items-center justify-center bg-[#0a0505]">
                     <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
                   </div>
@@ -405,22 +225,6 @@ const HeroSection = () => {
         @keyframes pulse-gentle {
           0%, 100% { transform: scale(1); opacity: 0.9; }
           50% { transform: scale(1.08); opacity: 1; }
-        }
-        @keyframes eq1 {
-          0%, 100% { height: 4px; }
-          50% { height: 16px; }
-        }
-        @keyframes eq2 {
-          0%, 100% { height: 8px; }
-          50% { height: 20px; }
-        }
-        @keyframes eq3 {
-          0%, 100% { height: 12px; }
-          50% { height: 6px; }
-        }
-        @keyframes eq4 {
-          0%, 100% { height: 6px; }
-          50% { height: 14px; }
         }
       `}</style>
     </TextureSection>
