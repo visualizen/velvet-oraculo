@@ -21,7 +21,7 @@ const EXPECTATIVA_OPTIONS = [
 const STEP_HOOKS = [
   {
     eyebrow: "✦ Passo 1 de 3",
-    text: "Mais de 2.000 mulheres já baixaram este guia e começaram a ler tarô com confiança.",
+    text: "Este guia foi criado para quem quer começar a ler tarô com confiança, sem decorar nada.",
   },
   {
     eyebrow: "✦ Passo 2 de 3",

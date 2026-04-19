@@ -43,7 +43,7 @@ const PricingSection = () => (
       <div className="fade-item mb-6">
         <p className="font-body text-foreground/60 text-sm line-through mb-1">Valor total: R$ 2.785</p>
         <p className="font-editorial italic text-primary text-lg mb-2">Por apenas</p>
-        <p className="font-body text-foreground/60 text-sm tracking-wide mb-1">12x de</p>
+        <p className="font-body text-foreground/60 text-xl tracking-wide mb-1">12x de</p>
         <p className="font-display text-5xl md:text-6xl text-primary font-bold">R$ 35,68</p>
         <p className="font-body text-foreground/60 text-base mt-3">ou R$ 365 à vista</p>
       </div>
