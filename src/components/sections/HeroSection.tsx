@@ -1,4 +1,4 @@
-import { useRef, useState, useCallback } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import TextureSection from "../TextureSection";
 import Ornament from "../Ornament";
 import CTAButton from "../CTAButton";
@@ -6,8 +6,18 @@ import CTAButton from "../CTAButton";
 const VIDEO_URL =
   "https://gvhqihdqxqiiokyhteba.supabase.co/storage/v1/object/public/videos/video-landingpage.mp4";
 
+/* Detect TikTok webview (allowsInlineMediaPlayback = false) */
+const IS_TIKTOK = (() => {
+  if (typeof navigator === "undefined") return false;
+  const ua = navigator.userAgent || "";
+  return /BytedanceWebview|TikTok|Musical_ly/i.test(ua);
+})();
+
 const HeroSection = () => {
   const videoRef = useRef<HTMLVideoElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const hiddenVideoRef = useRef<HTMLVideoElement | null>(null);
+  const rafRef = useRef<number>(0);
   const progressBarRef = useRef<HTMLDivElement>(null);
 
   const [isMuted, setIsMuted] = useState(true);
@@ -15,15 +25,92 @@ const HeroSection = () => {
   const [realProgress, setRealProgress] = useState(0);
   const [duration, setDuration] = useState(0);
 
-  /* ─── Accelerated progress: first half fills 75% of bar ─── */
+  /* ─── Accelerated progress ─── */
   const visualProgress =
     realProgress <= 50
       ? (realProgress / 50) * 75
       : 75 + ((realProgress - 50) / 50) * 25;
 
-  /* ─── Click: unmute (first tap) or toggle play/pause ─── */
+  /* ─── TikTok: canvas-based video rendering (bypasses native player) ─── */
+  useEffect(() => {
+    if (!IS_TIKTOK) return;
+
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    // Create a HIDDEN video element — NOT rendered in the visible DOM
+    const video = document.createElement("video");
+    video.crossOrigin = "anonymous";
+    video.src = VIDEO_URL;
+    video.muted = true;
+    video.loop = true;
+    video.playsInline = true;
+    video.setAttribute("playsinline", "");
+    video.setAttribute("webkit-playsinline", "true");
+    video.preload = "auto";
+
+    // Hide it completely but keep in DOM (some browsers need it attached)
+    video.style.cssText =
+      "position:fixed;top:-9999px;left:-9999px;width:1px;height:1px;opacity:0;pointer-events:none;";
+    document.body.appendChild(video);
+
+    hiddenVideoRef.current = video;
+
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+
+    // Draw video frames to canvas
+    const drawFrame = () => {
+      if (video.readyState >= 2) {
+        // Set canvas size to match video on first frame
+        if (canvas.width !== video.videoWidth && video.videoWidth > 0) {
+          canvas.width = video.videoWidth;
+          canvas.height = video.videoHeight;
+        }
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+      }
+
+      // Update progress
+      if (video.duration) {
+        setRealProgress((video.currentTime / video.duration) * 100);
+        setDuration(video.duration);
+      }
+
+      rafRef.current = requestAnimationFrame(drawFrame);
+    };
+
+    video.addEventListener("canplay", () => {
+      setIsReady(true);
+      video.play().catch(() => {});
+      drawFrame();
+    }, { once: true });
+
+    // If already ready
+    if (video.readyState >= 3) {
+      setIsReady(true);
+      video.play().catch(() => {});
+      drawFrame();
+    }
+
+    return () => {
+      cancelAnimationFrame(rafRef.current);
+      video.pause();
+      video.src = "";
+      if (document.body.contains(video)) {
+        document.body.removeChild(video);
+      }
+      hiddenVideoRef.current = null;
+    };
+  }, []);
+
+  /* ─── Get the active video element (hidden for TikTok, visible for others) ─── */
+  const getVideo = useCallback(() => {
+    return IS_TIKTOK ? hiddenVideoRef.current : videoRef.current;
+  }, []);
+
+  /* ─── Click: unmute or toggle play ─── */
   const handleClick = useCallback(() => {
-    const v = videoRef.current;
+    const v = getVideo();
     if (!v) return;
 
     if (isMuted) {
@@ -33,13 +120,13 @@ const HeroSection = () => {
     } else {
       v.paused ? v.play().catch(() => {}) : v.pause();
     }
-  }, [isMuted]);
+  }, [isMuted, getVideo]);
 
   /* ─── Seek ─── */
   const handleSeek = useCallback(
     (e: React.MouseEvent) => {
       e.stopPropagation();
-      const v = videoRef.current;
+      const v = getVideo();
       const bar = progressBarRef.current;
       if (!v || !bar || !duration) return;
       const rect = bar.getBoundingClientRect();
@@ -51,7 +138,7 @@ const HeroSection = () => {
       v.currentTime = realPct * duration;
       setRealProgress(realPct * 100);
     },
-    [duration]
+    [duration, getVideo]
   );
 
   return (
@@ -90,33 +177,37 @@ const HeroSection = () => {
             >
               {/* 16:9 wrapper */}
               <div className="relative w-full bg-[#0a0505]" style={{ paddingBottom: "56.25%" }}>
-                {/*
-                  THE SIMPLEST POSSIBLE VIDEO ELEMENT.
-                  All four attributes directly in JSX — no JS, no useEffect, no DOM API.
-                  This is what every documentation says works.
-                */}
-                <video
-                  ref={videoRef}
-                  src={VIDEO_URL}
-                  autoPlay
-                  muted
-                  loop
-                  playsInline
-                  preload="auto"
-                  className="absolute inset-0 w-full h-full object-cover"
-                  onLoadedData={() => setIsReady(true)}
-                  onTimeUpdate={() => {
-                    const v = videoRef.current;
-                    if (!v || !v.duration) return;
-                    setRealProgress((v.currentTime / v.duration) * 100);
-                    setDuration(v.duration);
-                  }}
-                />
+                {IS_TIKTOK ? (
+                  /* ─── TikTok: canvas (video frames drawn via JS) ─── */
+                  <canvas
+                    ref={canvasRef}
+                    className="absolute inset-0 w-full h-full object-cover"
+                  />
+                ) : (
+                  /* ─── Normal: standard <video> ─── */
+                  <video
+                    ref={videoRef}
+                    src={VIDEO_URL}
+                    autoPlay
+                    muted
+                    loop
+                    playsInline
+                    preload="auto"
+                    className="absolute inset-0 w-full h-full object-cover"
+                    onLoadedData={() => setIsReady(true)}
+                    onTimeUpdate={() => {
+                      const v = videoRef.current;
+                      if (!v || !v.duration) return;
+                      setRealProgress((v.currentTime / v.duration) * 100);
+                      setDuration(v.duration);
+                    }}
+                  />
+                )}
 
                 {/* Click overlay */}
                 <div className="absolute inset-0 z-10" />
 
-                {/* Unmute button — small circle */}
+                {/* Unmute button */}
                 {isMuted && isReady && (
                   <div className="absolute inset-0 z-20 flex items-center justify-center pointer-events-none">
                     <div className="w-12 h-12 rounded-full bg-black/60 backdrop-blur-sm flex items-center justify-center border border-white/15 shadow-lg animate-[pulse-gentle_2s_ease-in-out_infinite]">
