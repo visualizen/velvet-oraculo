@@ -110,18 +110,32 @@ const HeroSection = () => {
   }, [isPlaying, resetHide]);
 
   const handleVideoClick = useCallback(() => {
-    if (IS_IN_APP) {
-      const v = nativeVideoRef.current;
-      if (!v) return;
-      v.currentTime = 0;
-      v.play().catch(() => {});
+    // First click unmutes, subsequent clicks toggle play/pause
+    if (isMuted) {
+      if (IS_IN_APP) {
+        const v = nativeVideoRef.current;
+        if (!v) return;
+        v.muted = false;
+        v.volume = 0.7;
+      } else {
+        const p = playerRef.current;
+        if (!p) return;
+        p.setVolume(0.7);
+      }
+      setIsMuted(false);
     } else {
-      const p = playerRef.current;
-      if (!p) return;
-      p.setCurrentTime(0).then(() => p.play());
+      if (IS_IN_APP) {
+        const v = nativeVideoRef.current;
+        if (!v) return;
+        isPlaying ? v.pause() : v.play().catch(() => {});
+      } else {
+        const p = playerRef.current;
+        if (!p) return;
+        isPlaying ? p.pause() : p.play();
+      }
     }
     resetHide();
-  }, [resetHide]);
+  }, [isMuted, isPlaying, resetHide]);
 
   const togglePlay = useCallback(
     (e: React.MouseEvent) => {
@@ -285,6 +299,24 @@ const HeroSection = () => {
 
                 {/* Click overlay (captures clicks above the iframe/video) */}
                 <div className="absolute inset-0 z-10" />
+
+                {/* Unmute overlay button — shown when video is muted and ready */}
+                {isMuted && isReady && (
+                  <div className="absolute inset-0 z-20 flex items-center justify-center pointer-events-none">
+                    <div className="flex flex-col items-center gap-2 animate-pulse">
+                      <div className="w-14 h-14 md:w-16 md:h-16 rounded-full bg-black/50 backdrop-blur-sm flex items-center justify-center border border-primary/30 shadow-[0_0_20px_rgba(201,169,110,0.25)]">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="hsl(39,40%,60%)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <polygon points="11,5 6,9 2,9 2,15 6,15 11,19" fill="hsl(39,40%,60%)" />
+                          <line x1="23" y1="9" x2="17" y2="15" />
+                          <line x1="17" y1="9" x2="23" y2="15" />
+                        </svg>
+                      </div>
+                      <span className="font-editorial italic text-foreground/80 text-[11px] tracking-wider bg-black/50 backdrop-blur-sm px-3 py-1 rounded-full">
+                        Toque para ativar o som
+                      </span>
+                    </div>
+                  </div>
+                )}
 
                 {/* Loading spinner — auto-dismissed after 5s timeout */}
                 {!isReady && (
