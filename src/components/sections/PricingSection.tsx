@@ -71,7 +71,7 @@ const PricingSection = ({ onOpenCheckout }: PricingSectionProps) => {
           Imagine abrir qualquer baralho, olhar para uma carta que você nunca viu e saber exatamente o que ela está dizendo. Sem consultar livros. Sem depender de ninguém. Com autoridade própria, até para tomar as decisões mais importantes da sua vida.
         </p>
         <p className="fade-item font-body text-foreground/60 text-sm mb-6">
-          8 módulos · ~15 min por aula · no seu ritmo · acesso vitalício
+          8 módulos · no seu ritmo · acesso vitalício
         </p>
         <Ornament className="fade-item mb-8" />
 
