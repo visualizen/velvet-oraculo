@@ -23,10 +23,10 @@ const TestimonialsSection = () => (
         {testimonials.map((t, i) => (
           <div key={i} className="fade-item p-6 rounded-sm border border-primary/20 bg-background/20 backdrop-blur-sm">
             <p className="font-italianno text-2xl text-primary mb-4">❝</p>
-            <p className="font-editorial italic text-primary/90 text-base mb-4">{t.quote}</p>
-            <p className="font-body text-foreground/90 text-sm leading-relaxed mb-6">{t.text}</p>
+            <p className="font-editorial italic text-primary/90 text-lg md:text-xl mb-4">{t.quote}</p>
+            <p className="font-body text-foreground/90 text-base leading-relaxed mb-6">{t.text}</p>
             <div className="border-t border-primary/20 pt-4">
-              <p className="font-display text-xs tracking-widest text-foreground/90">{t.name}</p>
+              <p className="font-display text-sm tracking-widest text-foreground/90">{t.name}</p>
               <p className="font-body text-foreground/60 text-sm">{t.city}</p>
             </div>
           </div>

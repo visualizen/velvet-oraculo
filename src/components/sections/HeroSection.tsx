@@ -91,17 +91,17 @@ const HeroSection = () => {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-12 xl:gap-16 items-center">
           {/* ─── LEFT: Copy ─── */}
           <div className="text-center lg:text-left flex flex-col items-center lg:items-start text-shadow-dark order-1">
-            <p className="fade-item font-editorial italic text-primary text-xs md:text-sm tracking-[0.3em] uppercase mb-5">
+            <p className="fade-item font-editorial italic text-primary text-sm md:text-base tracking-[0.3em] uppercase mb-5">
               ✦ Velvet Oráculo ✦
             </p>
             <Ornament className="fade-item mb-6 lg:mb-8" />
             <h1 className="fade-item font-display text-2xl sm:text-3xl md:text-4xl lg:text-[2.6rem] xl:text-5xl text-foreground leading-[1.15] mb-4 lg:mb-5">
-              Torne-se mestre do seu próprio oráculo.
+              Você sente que o tarô te chama, mas ninguém te ensinou a interpretar.
             </h1>
             <p className="fade-item font-editorial italic text-foreground/90 text-base md:text-lg lg:text-xl leading-relaxed mb-3 lg:mb-4 max-w-lg">
-              Aprenda tarô de forma profunda, simbólica e intuitiva — sem decorar significados.
+              Eu estudei tarô por anos. Já pensei em desistir várias vezes... até que descobri que o problema não era tentativa, era falta de método guiado.
             </p>
-            <p className="fade-item font-body text-foreground/60 text-sm md:text-base mb-6 lg:mb-8">
+            <p className="fade-item font-body text-foreground/75 text-base md:text-lg mb-6 lg:mb-8">
               Para quem quer se conhecer e ler com autonomia.
             </p>
             <div className="fade-item hidden lg:block">

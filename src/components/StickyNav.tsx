@@ -20,7 +20,7 @@ const StickyNav = () => {
           <span className="font-display text-sm tracking-[0.2em] text-primary">VELVET ORÁCULO</span>
           <button
             onClick={() => setIsModalOpen(true)}
-            className="font-display text-xs tracking-[0.15em] px-6 py-2 bg-primary text-primary-foreground rounded-sm hover:bg-primary/90 transition-colors animate-cta-glow cursor-pointer"
+            className="font-display text-sm tracking-[0.15em] px-6 py-2.5 bg-primary text-primary-foreground rounded-sm hover:bg-primary/90 transition-colors animate-cta-glow cursor-pointer"
           >
             QUERO ENTRAR
           </button>

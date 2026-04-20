@@ -31,7 +31,7 @@ const FAQSection = () => (
       <Accordion type="single" collapsible className="fade-item">
         {faqs.map((faq, i) => (
           <AccordionItem key={i} value={`faq-${i}`} className="border-flora-borgonha/15">
-            <AccordionTrigger className="font-editorial text-flora-veludo text-left text-base hover:text-flora-borgonha hover:no-underline [&>svg]:text-flora-borgonha">
+            <AccordionTrigger className="font-editorial text-flora-veludo text-left text-lg hover:text-flora-borgonha hover:no-underline [&>svg]:text-flora-borgonha">
               {faq.q}
             </AccordionTrigger>
             <AccordionContent className="font-body text-flora-veludo/85 text-base leading-relaxed">

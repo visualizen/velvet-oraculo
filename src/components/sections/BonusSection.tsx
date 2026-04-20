@@ -2,7 +2,7 @@ import TextureSection from "../TextureSection";
 import Ornament from "../Ornament";
 
 const bonuses = [
-  { icon: "📜", title: "7 Apostilas Completas", desc: "Manual Essencial do Tarô · Dicionário Simbólico dos Arcanos · Numerologia Aplicada · Elementos e Naipes · Tiragens Essenciais + Autorais · Preparação Energética e Meditações · Ética no Tarô. Documentos que você vai usar para sempre." },
+  { icon: "📜", title: "7 Apostilas Completas (124 páginas)", desc: "Referência permanente cobrindo todos os módulos: simbologia, numerologia, naipes, tiragens, ética e meditações." },
   { icon: "🎬", title: "Aulas Bônus com Temas Escolhidos por Você", desc: "Aulas extras criadas com base no que a comunidade quer aprender. Você vota nos temas, e nós gravamos conteúdos sob medida para aprofundar o que mais importa pra você." },
   { icon: "🌙", title: "Comunidade Exclusiva", desc: "Acesso ao grupo fechado de pessoas que levam espiritualidade, autoconhecimento e estética a sério. Um espaço para praticar, compartilhar leituras e crescer junto." },
   { icon: "🗝️", title: "Ritual de Iniciação com o Baralho", desc: "Um guia completo para criar seu primeiro vínculo com o baralho: limpeza energética, ritual de apresentação e exercício de primeiro contato." },
@@ -31,7 +31,7 @@ const BonusSection = () => (
       </div>
 
       <div className="fade-item text-center p-8 rounded-sm border-2 border-primary/40 bg-primary/5 backdrop-blur-sm">
-        <p className="font-display text-sm tracking-[0.3em] text-primary mb-3">🌟 BÔNUS ESPECIAL DE LANÇAMENTO</p>
+        <p className="font-display text-base md:text-lg tracking-[0.2em] text-primary mb-3">🌟 BÔNUS ESPECIAL DE LANÇAMENTO</p>
         <p className="font-body text-foreground/90 text-lg">
           Quem se inscrever agora recebe acesso a conteúdos exclusivos e surpresas especiais preparadas com carinho.
         </p>

@@ -23,9 +23,15 @@ const FinalCTASection = () => (
         <CTAButton text="ENTRAR NO PORTAL AGORA" className="text-base md:text-lg px-12 py-5" />
       </div>
 
-      <p className="fade-item font-body text-foreground/60 text-sm">
-        <span className="line-through text-foreground/35 mr-1">R$997</span> → 12x de R$35,68 · ou R$365 à vista · Acesso imediato · Garantia de 7 dias
-      </p>
+      {/* Price info - broken into readable lines */}
+      <div className="fade-item space-y-1">
+        <p className="font-body text-foreground/80 text-base">
+          <span className="line-through text-foreground/40 mr-1">R$997</span> → 12x de <span className="text-primary font-display">R$35,68</span> ou R$365 à vista
+        </p>
+        <p className="font-body text-foreground/60 text-sm">
+          Acesso imediato · Garantia de 7 dias · Preço de lançamento
+        </p>
+      </div>
 
       <Ornament className="fade-item mt-14 opacity-40" />
       <p className="fade-item font-display text-xs tracking-[0.3em] text-primary/50 mt-8">

@@ -2,14 +2,14 @@ import TextureSection from "../TextureSection";
 import Ornament from "../Ornament";
 
 const modules = [
-  { num: 1, title: "O que é o Tarô", desc: "Quebrando mitos, apagando tabus, e criando um vínculo real com o baralho. Aqui começa a jornada." },
-  { num: 2, title: "Os Arcanos Maiores: A Jornada da Alma", desc: "Os 22 arquétipos universais, percorridos através da Jornada do Louco. Você aprende a ler o mapa da sua própria encarnação." },
-  { num: 3, title: "Numerologia do Tarô", desc: "A lógica oculta por trás das cartas. Quando você entende os números, destranca leituras que antes pareciam impossíveis." },
-  { num: 4, title: "Os Arcanos Menores", desc: "Fogo, água, ar e terra. Os naipes e elementos que descrevem o cotidiano da vida. Você vai entender por que eles não são difíceis, eles são lógicos." },
-  { num: 5, title: "Simbologia do Tarô", desc: "Objetos, cores, gestos, direções, animais. A leitura profunda e verdadeiramente intuitiva começa quando você aprende a ver além do óbvio." },
-  { num: 6, title: "Tiragens na Prática", desc: "1 carta, 3 cartas, Cruz Simples e como criar suas próprias tiragens. Autonomia total: você vai terminar este módulo lendo tarô de verdade." },
-  { num: 7, title: "Ética, Bloqueios e Leitura Responsável", desc: "O que transforma quem lê em profissional de referência. Porque a ética não é uma limitação, é o que constrói sua reputação." },
-  { num: 8, title: "Tarô & Cabala", desc: "A Árvore da Vida, os arcanos maiores e a tradição mística por trás das cartas. Para quem quer ir mais fundo do que qualquer curso vai.", bonus: true },
+  { num: 1, title: "O que é o Tarô", desc: "Quebrando mitos, apagando tabus e criando um vínculo real com o baralho." },
+  { num: 2, title: "Os Arcanos Maiores: A Jornada da Alma", desc: "Os 22 arquétipos universais, percorridos através da Jornada do Louco." },
+  { num: 3, title: "Numerologia do Tarô", desc: "A lógica oculta por trás das cartas. Quando você entende os números, destranca leituras inteiras." },
+  { num: 4, title: "Os Arcanos Menores", desc: "Fogo, água, ar e terra. Os naipes e elementos que descrevem o cotidiano da vida." },
+  { num: 5, title: "Simbologia do Tarô", desc: "Objetos, cores, gestos, direções. A leitura profunda começa quando você aprende a ver além do óbvio." },
+  { num: 6, title: "Tiragens na Prática", desc: "1 carta, 3 cartas, Cruz Simples e como criar suas próprias tiragens. Autonomia total." },
+  { num: 7, title: "Ética, Bloqueios e Leitura Responsável", desc: "O que transforma quem lê em profissional de referência." },
+  { num: 8, title: "Tarô & Cabala", desc: "A Árvore da Vida e a tradição mística por trás das cartas. Para quem quer ir mais fundo.", bonus: true },
 ];
 
 const ModulesSection = () => (
@@ -35,7 +35,7 @@ const ModulesSection = () => (
             }`}
           >
             <div className="flex items-start gap-4">
-              <span className={`font-display text-sm tracking-widest mt-1 shrink-0 ${m.bonus ? "text-primary" : "text-flora-borgonha"}`}>
+              <span className={`font-display text-base md:text-lg tracking-widest mt-0.5 shrink-0 ${m.bonus ? "text-primary" : "text-flora-borgonha"}`}>
                 {m.bonus ? "🎁" : `0${m.num}`}
               </span>
               <div>

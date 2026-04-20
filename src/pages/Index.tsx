@@ -21,10 +21,10 @@ const Index = () => {
       <StickyNav />
       <HeroSection />
       <IdentificationSection />
+      <BioSection />
       <PromiseSection />
       <ModulesSection />
       <BonusSection />
-      <BioSection />
       <TestimonialsSection />
       <PricingSection onOpenCheckout={() => setIsCheckoutOpen(true)} />
       <FAQSection />

@@ -38,8 +38,8 @@ const BioSection = () => (
             <div className="absolute bottom-0 left-0 right-0 h-20 bg-gradient-to-t from-black/50 to-transparent" />
             {/* Name overlay on photo */}
             <div className="absolute bottom-3 left-0 right-0 text-center">
-              <p className="font-cinzel text-xs tracking-[0.25em] text-white/90 uppercase">Luísa</p>
-              <p className="font-italianno text-lg text-white/60">Taróloga há 7+ anos</p>
+              <p className="font-cinzel text-sm tracking-[0.25em] text-white/90 uppercase">Luísa</p>
+              <p className="font-italianno text-lg text-white/70">Taróloga há 7+ anos · 2.000+ leituras</p>
             </div>
           </div>
         </div>
@@ -47,7 +47,7 @@ const BioSection = () => (
         {/* Bio Text */}
         <div className="space-y-6 font-body text-flora-veludo/90 text-lg md:text-xl leading-relaxed italic flex-1 md:pt-2">
           <p>
-            Me chamo Luísa, sou taróloga há mais de 7 anos e o tarô não entrou na minha vida como misticismo, mas como a primeira ferramenta que me fez perguntas que eu nunca tinha me feito.
+            Me chamo Luísa, sou taróloga há mais de 7 anos e já realizei mais de 2.000 leituras. O tarô não entrou na minha vida como misticismo, mas como a primeira ferramenta que me fez perguntas que eu nunca tinha me feito.
           </p>
           <p>
             Minha relação com espiritualidade sempre foi intelectual. Eu queria entender o porquê das coisas, não apenas acreditar. O tarô foi o primeiro sistema que uniu profundidade, beleza e autonomia.
