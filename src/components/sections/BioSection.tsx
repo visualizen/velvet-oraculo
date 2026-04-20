@@ -39,7 +39,6 @@ const BioSection = () => (
             {/* Name overlay on photo */}
             <div className="absolute bottom-3 left-0 right-0 text-center">
               <p className="font-cinzel text-sm tracking-[0.25em] text-white/90 uppercase">Luísa</p>
-              <p className="font-italianno text-lg text-white/70">Taróloga há 7+ anos · 2.000+ leituras</p>
             </div>
           </div>
         </div>
