@@ -16,17 +16,17 @@ const FinalCTASection = () => (
       </p>
 
       <p className="fade-item font-body text-foreground text-lg md:text-xl leading-relaxed mb-12">
-        Essa não é uma falha sua. É uma falha do jeito como o tarô costuma ser ensinado. O tarô não é uma lista de significados. É uma linguagem de símbolos. E quando você aprende a língua, não precisa mais de dicionário.
+        Se você travou no tarô até agora, não é uma falha sua. É uma falha do jeito como o tarô costuma ser ensinado. O tarô não é uma lista de significados. É uma linguagem de símbolos. E quando você aprende a língua, não precisa mais de dicionário.
       </p>
 
       <div className="fade-item mb-6">
         <CTAButton text="ENTRAR NO PORTAL AGORA" className="text-base md:text-lg px-12 py-5" />
       </div>
 
-      {/* Price info - broken into readable lines */}
+      {/* Price info */}
       <div className="fade-item space-y-1">
         <p className="font-body text-foreground/80 text-base">
-          <span className="line-through text-foreground/40 mr-1">R$997</span> → 12x de <span className="text-primary font-display">R$35,68</span> ou R$365 à vista
+          Valor completo <span className="line-through text-foreground/40 mr-1">R$3.211</span> → Lançamento: 12x de <span className="text-primary font-display">R$35,68</span> ou R$365 à vista
         </p>
         <p className="font-body text-foreground/60 text-sm">
           Acesso imediato · Garantia de 7 dias · Preço de lançamento

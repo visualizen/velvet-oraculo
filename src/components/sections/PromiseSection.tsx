@@ -29,7 +29,7 @@ const PromiseSection = () => (
         Ao terminar o curso, você será capaz de:
       </p>
 
-      <ul className="space-y-4 text-left max-w-xl mx-auto mb-12">
+      <ul className="space-y-4 text-left max-w-xl mx-auto mb-10">
         {transformations.map((item, i) => (
           <li key={i} className="fade-item flex items-start gap-3 text-foreground text-lg font-body">
             <span className="text-primary mt-1 shrink-0">✦</span>
@@ -37,6 +37,11 @@ const PromiseSection = () => (
           </li>
         ))}
       </ul>
+
+      {/* Time delay line */}
+      <p className="fade-item font-editorial italic text-primary/80 text-base md:text-lg leading-relaxed mb-12 max-w-lg mx-auto">
+        Já na primeira semana você faz sua primeira leitura simbólica com autonomia. Ao final do Módulo 2 (Arcanos Maiores), você já realiza tiragens reais. Sem pressa. No seu ritmo.
+      </p>
 
       <div className="fade-item">
         <CTAButton />
