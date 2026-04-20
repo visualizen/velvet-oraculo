@@ -38,7 +38,7 @@ const ValueRow = ({ name, value }: { name: string; value: number }) => (
       <span className="text-primary shrink-0 text-xs">✦</span>
       <span className="font-body text-foreground text-sm md:text-base text-left leading-snug">{name}</span>
     </div>
-    <span className="font-cinzel text-foreground/40 text-xs md:text-sm shrink-0">R$ {value}</span>
+    <span className="font-cinzel text-foreground/40 text-xs md:text-sm shrink-0 line-through">R$ {value}</span>
   </div>
 );
 
