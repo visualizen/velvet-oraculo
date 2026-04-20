@@ -50,13 +50,13 @@ const BonusSection = () => (
             {b.desc ? (
               <p className="font-body text-foreground/90 text-base leading-relaxed">{b.desc}</p>
             ) : (
-              <div className="space-y-2">
-                <p className="font-body text-foreground/70 text-sm mb-3">
+              <div className="space-y-2.5">
+                <p className="font-body text-foreground/70 text-sm leading-relaxed mb-3">
                   Aulas bônus já gravadas sobre os 4 temas que a comunidade mais pede:
                 </p>
                 {b.topics?.map((t, j) => (
                   <p key={j} className="font-body text-foreground/90 text-sm leading-relaxed pl-3 border-l-2 border-primary/20">
-                    <strong className="text-primary/90">{t.bold}</strong> {t.text}
+                    <strong className="text-primary/90">{t.bold}</strong>{" "}{t.text}
                   </p>
                 ))}
               </div>

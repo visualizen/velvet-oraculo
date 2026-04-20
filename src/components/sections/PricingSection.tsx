@@ -33,12 +33,12 @@ interface PricingSectionProps {
 }
 
 const ValueRow = ({ name, value }: { name: string; value: number }) => (
-  <div className="flex items-center justify-between gap-4 px-3 py-2.5 border-b border-primary/8">
-    <div className="flex items-center gap-3 min-w-0">
-      <span className="text-primary shrink-0 text-sm">✦</span>
-      <span className="font-body text-foreground text-base text-left">{name}</span>
+  <div className="flex items-center justify-between gap-3 px-3 py-2.5 border-b border-primary/8">
+    <div className="flex items-center gap-2.5 min-w-0">
+      <span className="text-primary shrink-0 text-xs">✦</span>
+      <span className="font-body text-foreground text-sm md:text-base text-left leading-snug">{name}</span>
     </div>
-    <span className="font-display text-foreground/40 text-sm shrink-0">R$ {value}</span>
+    <span className="font-display text-foreground/40 text-xs md:text-sm shrink-0">R$ {value}</span>
   </div>
 );
 
@@ -77,7 +77,7 @@ const PricingSection = ({ onOpenCheckout }: PricingSectionProps) => {
 
         {/* Value stack with prices */}
         <div className="fade-item text-left mb-8">
-          <p className="font-display text-foreground/50 text-xs tracking-[0.2em] uppercase mb-4 text-center">
+          <p className="font-display text-foreground/50 text-sm tracking-[0.2em] uppercase mb-4 text-center">
             📦 Tudo o que está incluso
           </p>
 

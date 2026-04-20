@@ -34,12 +34,12 @@ const ForWhomSection = () => (
       <div className="grid md:grid-cols-2 gap-8 text-left">
         {/* For you */}
         <div className="fade-item">
-          <p className="font-editorial italic text-primary text-sm tracking-wider uppercase mb-5">
+          <p className="font-editorial italic text-primary text-sm md:text-base tracking-wider uppercase mb-5">
             ✦ Esse curso é para você se:
           </p>
-          <ul className="space-y-4">
+          <ul className="space-y-3.5">
             {forYou.map((item, i) => (
-              <li key={i} className="flex items-start gap-3 font-body text-foreground text-base leading-relaxed">
+              <li key={i} className="flex items-start gap-2.5 font-body text-foreground text-sm md:text-base leading-relaxed">
                 <span className="text-primary shrink-0 mt-0.5">✓</span>
                 <span>{item}</span>
               </li>
@@ -49,12 +49,12 @@ const ForWhomSection = () => (
 
         {/* Not for you */}
         <div className="fade-item">
-          <p className="font-editorial italic text-foreground/50 text-sm tracking-wider uppercase mb-5">
+          <p className="font-editorial italic text-foreground/50 text-sm md:text-base tracking-wider uppercase mb-5">
             ✦ Esse curso não é para você se:
           </p>
-          <ul className="space-y-4">
+          <ul className="space-y-3.5">
             {notForYou.map((item, i) => (
-              <li key={i} className="flex items-start gap-3 font-body text-foreground/60 text-base leading-relaxed">
+              <li key={i} className="flex items-start gap-2.5 font-body text-foreground/60 text-sm md:text-base leading-relaxed">
                 <span className="text-foreground/30 shrink-0 mt-0.5">✕</span>
                 <span>{item}</span>
               </li>
