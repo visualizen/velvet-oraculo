@@ -17,7 +17,7 @@ const PromiseSection = () => (
     className="py-20 md:py-28"
   >
     <div className="container mx-auto px-6 max-w-3xl text-center text-shadow-dark">
-      <h2 className="fade-item font-display text-2xl md:text-3xl lg:text-4xl text-foreground mb-8 leading-tight">
+      <h2 className="fade-item font-cinzel text-2xl md:text-3xl lg:text-4xl text-foreground mb-8 leading-tight">
         Aqui você não vai decorar cartas. Vai aprender a linguagem do tarô.
       </h2>
       <Ornament className="fade-item mb-8" />

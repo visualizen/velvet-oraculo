@@ -39,24 +39,21 @@ const BioSection = () => (
             {/* Name overlay on photo */}
             <div className="absolute bottom-3 left-0 right-0 text-center">
               <p className="font-cinzel text-sm tracking-[0.25em] text-white/90 uppercase">Luísa</p>
-              <p className="font-italianno text-lg text-white/70">Taróloga há 7+ anos · +2.000 leituras</p>
+              <p className="font-italianno text-lg text-white/70">Taróloga há 7+ anos · 2.000+ leituras</p>
             </div>
           </div>
         </div>
 
-        {/* Bio Text — Epiphany Bridge */}
+        {/* Bio Text */}
         <div className="space-y-6 font-body text-flora-veludo/90 text-lg md:text-xl leading-relaxed italic flex-1 md:pt-2">
           <p>
-            Há 7 anos eu estava numa encruzilhada da minha vida. Precisava de clareza e coragem, mas todas as tarólogas que consultei me deixavam mais dependente, não mais livre. Eu saía da consulta com mais medo do que quando cheguei.
+            Me chamo Luísa, sou taróloga há mais de 7 anos e já realizei mais de 2.000 leituras. O tarô não entrou na minha vida como misticismo, mas como a primeira ferramenta que me fez perguntas que eu nunca tinha me feito.
           </p>
           <p>
-            Foi nesse desconforto que eu entendi uma coisa que mudou tudo: <strong className="not-italic text-flora-borgonha">o tarô não é previsão, é espelho</strong>. E quando você aprende a ler a linguagem dos símbolos, você nunca mais precisa da carta de ninguém para se enxergar.
+            Minha relação com espiritualidade sempre foi intelectual. Eu queria entender o porquê das coisas, não apenas acreditar. O tarô foi o primeiro sistema que uniu profundidade, beleza e autonomia.
           </p>
           <p>
-            A partir daí, eu estudei por 7 anos, fiz mais de 2.000 leituras, e desenvolvi o método que eu gostaria de ter encontrado no começo. Não um dicionário para decorar. Uma linguagem para aprender.
-          </p>
-          <p className="text-flora-borgonha font-editorial">
-            Esse é o curso que eu gostaria de ter encontrado há 7 anos. E é o curso que agora eu abro para você.
+            Eu criei este curso porque acredito que toda pessoa merece ter acesso à sua própria sabedoria interior, sem depender de ninguém para interpretá-la.
           </p>
         </div>
       </div>

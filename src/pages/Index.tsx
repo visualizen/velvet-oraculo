@@ -4,7 +4,6 @@ import HeroSection from "@/components/sections/HeroSection";
 import IdentificationSection from "@/components/sections/IdentificationSection";
 import PromiseSection from "@/components/sections/PromiseSection";
 import ModulesSection from "@/components/sections/ModulesSection";
-import ForWhomSection from "@/components/sections/ForWhomSection";
 import BonusSection from "@/components/sections/BonusSection";
 import BioSection from "@/components/sections/BioSection";
 import TestimonialsSection from "@/components/sections/TestimonialsSection";
@@ -25,7 +24,6 @@ const Index = () => {
       <BioSection />
       <PromiseSection />
       <ModulesSection />
-      <ForWhomSection />
       <BonusSection />
       <TestimonialsSection />
       <PricingSection onOpenCheckout={() => setIsCheckoutOpen(true)} />

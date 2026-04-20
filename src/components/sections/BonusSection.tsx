@@ -37,7 +37,7 @@ const BonusSection = () => (
     className="py-20 md:py-28"
   >
     <div className="container mx-auto px-6 max-w-5xl text-shadow-dark">
-      <h2 className="fade-item font-display text-2xl md:text-3xl lg:text-4xl text-foreground text-center mb-4">
+      <h2 className="fade-item font-cinzel text-2xl md:text-3xl lg:text-4xl text-foreground text-center mb-4">
         Além do curso, você leva:
       </h2>
       <Ornament className="fade-item mb-12" />
@@ -67,7 +67,7 @@ const BonusSection = () => (
 
       {/* Bônus Especial de Lançamento */}
       <div className="fade-item text-center p-8 rounded-sm border-2 border-primary/40 bg-primary/5 backdrop-blur-sm">
-        <p className="font-display text-base md:text-lg tracking-[0.2em] text-primary mb-3">🌟 BÔNUS ESPECIAL DE LANÇAMENTO</p>
+        <p className="font-cinzel text-base md:text-lg tracking-[0.2em] text-primary mb-3">🌟 BÔNUS ESPECIAL DE LANÇAMENTO</p>
         <h3 className="font-editorial italic text-foreground text-xl md:text-2xl mb-3">
           Aula Aberta: A Jornada do Louco
         </h3>

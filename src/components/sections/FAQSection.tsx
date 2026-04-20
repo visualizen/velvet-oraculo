@@ -24,7 +24,7 @@ const FAQSection = () => (
     className="py-20 md:py-28"
   >
     <div className="container mx-auto px-6 max-w-2xl">
-      <h2 className="fade-item font-display text-2xl md:text-3xl text-flora-veludo text-center mb-4">
+      <h2 className="fade-item font-cinzel text-2xl md:text-3xl text-flora-veludo text-center mb-4">
         Perguntas Frequentes
       </h2>
       <Ornament className="fade-item mb-10 [&_span]:text-flora-borgonha" />

@@ -9,7 +9,7 @@ const IdentificationSection = () => (
     className="py-20 md:py-28"
   >
     <div className="container mx-auto px-6 max-w-3xl text-center">
-      <h2 className="fade-item font-display text-2xl md:text-3xl lg:text-4xl text-flora-veludo mb-10 leading-tight">
+      <h2 className="fade-item font-cinzel text-2xl md:text-3xl lg:text-4xl text-flora-veludo mb-10 leading-tight">
         Você já sentiu que o tarô te chama, mas não sabe por onde começar?
       </h2>
       <Ornament className="fade-item mb-10 [&_span]:text-flora-borgonha" />

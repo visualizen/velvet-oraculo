@@ -253,7 +253,7 @@ const CheckoutModal = ({ isOpen, onClose }: CheckoutModalProps) => {
                 href={inAppRedirectUrl}
                 target="_self"
                 rel="noopener"
-                className="block w-full text-center bg-primary text-primary-foreground font-display tracking-[0.15em] text-sm font-bold px-8 py-4 rounded-sm border border-primary/50 hover:bg-primary/90 transition-all duration-500 animate-cta-glow no-underline"
+                className="block w-full text-center bg-primary text-primary-foreground font-cinzel tracking-[0.15em] text-sm font-bold px-8 py-4 rounded-sm border border-primary/50 hover:bg-primary/90 transition-all duration-500 animate-cta-glow no-underline"
               >
                 CONTINUAR PARA O CHECKOUT →
               </a>
@@ -442,7 +442,7 @@ const CheckoutModal = ({ isOpen, onClose }: CheckoutModalProps) => {
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className={`w-full font-display tracking-[0.15em] text-sm font-bold px-8 py-4 rounded-sm border transition-all duration-500 mt-2 ${
+                className={`w-full font-cinzel tracking-[0.15em] text-sm font-bold px-8 py-4 rounded-sm border transition-all duration-500 mt-2 ${
                   isSubmitting
                     ? "bg-primary/20 text-foreground/40 border-primary/10 cursor-wait"
                     : isValid

@@ -38,7 +38,7 @@ const ValueRow = ({ name, value }: { name: string; value: number }) => (
       <span className="text-primary shrink-0 text-xs">✦</span>
       <span className="font-body text-foreground text-sm md:text-base text-left leading-snug">{name}</span>
     </div>
-    <span className="font-display text-foreground/40 text-xs md:text-sm shrink-0">R$ {value}</span>
+    <span className="font-cinzel text-foreground/40 text-xs md:text-sm shrink-0">R$ {value}</span>
   </div>
 );
 
@@ -62,7 +62,7 @@ const PricingSection = ({ onOpenCheckout }: PricingSectionProps) => {
         <p className="fade-item font-editorial italic text-primary text-sm tracking-[0.3em] uppercase mb-4">
           ✦ Preço de lançamento — primeira turma ✦
         </p>
-        <h2 className="fade-item font-display text-2xl md:text-3xl lg:text-4xl text-foreground mb-3 leading-tight">
+        <h2 className="fade-item font-cinzel text-2xl md:text-3xl lg:text-4xl text-foreground mb-3 leading-tight">
           Sua jornada do básico ao avançado
         </h2>
 
@@ -77,7 +77,7 @@ const PricingSection = ({ onOpenCheckout }: PricingSectionProps) => {
 
         {/* Value stack with prices */}
         <div className="fade-item text-left mb-8">
-          <p className="font-display text-foreground/50 text-sm tracking-[0.2em] uppercase mb-4 text-center">
+          <p className="font-cinzel text-foreground/50 text-sm tracking-[0.2em] uppercase mb-4 text-center">
             📦 Tudo o que está incluso
           </p>
 
@@ -92,8 +92,8 @@ const PricingSection = ({ onOpenCheckout }: PricingSectionProps) => {
 
           {/* Total */}
           <div className="flex items-center justify-between gap-4 px-3 py-3 mt-4 border-t-2 border-primary/25">
-            <span className="font-display text-foreground text-base tracking-wider">VALOR TOTAL</span>
-            <span className="font-display text-foreground/50 text-lg line-through decoration-red-400/40">
+            <span className="font-cinzel text-foreground text-base tracking-wider">VALOR TOTAL</span>
+            <span className="font-cinzel text-foreground/50 text-lg line-through decoration-red-400/40">
               R$ {STACK_TOTAL.toLocaleString("pt-BR")}
             </span>
           </div>
@@ -111,8 +111,8 @@ const PricingSection = ({ onOpenCheckout }: PricingSectionProps) => {
           <p className="font-editorial italic text-foreground/60 text-base mb-1">Você investe hoje:</p>
 
           {/* Actual price */}
-          <p className="font-display text-foreground/60 text-2xl tracking-wide mb-1">12x de</p>
-          <p className="font-display text-5xl md:text-6xl text-primary font-bold">R$ {INSTALLMENT_PRICE}</p>
+          <p className="font-cinzel text-foreground/60 text-2xl tracking-wide mb-1">12x de</p>
+          <p className="font-cinzel text-5xl md:text-6xl text-primary font-bold">R$ {INSTALLMENT_PRICE}</p>
           <p className="font-body text-foreground/60 text-base mt-3">ou R$ {ACTUAL_PRICE} à vista</p>
 
           {/* Cost comparison */}
@@ -147,7 +147,7 @@ const PricingSection = ({ onOpenCheckout }: PricingSectionProps) => {
               </div>
             </div>
 
-            <h3 className="font-display text-lg sm:text-xl text-primary mb-2 tracking-wider">
+            <h3 className="font-cinzel text-lg sm:text-xl text-primary mb-2 tracking-wider">
               GARANTIA TOTAL DE 7 DIAS
             </h3>
             <Ornament className="mb-4 opacity-40" />

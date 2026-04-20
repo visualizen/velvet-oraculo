@@ -19,7 +19,7 @@ const ModulesSection = () => (
     className="py-20 md:py-28"
   >
     <div className="container mx-auto px-6 max-w-5xl">
-      <h2 className="fade-item font-display text-2xl md:text-3xl lg:text-4xl text-flora-veludo text-center mb-4 leading-tight">
+      <h2 className="fade-item font-cinzel text-2xl md:text-3xl lg:text-4xl text-flora-veludo text-center mb-4 leading-tight">
         8 Módulos. Da gênese à leitura intuitiva.
       </h2>
       <Ornament className="fade-item mb-12 [&_span]:text-flora-borgonha" />
@@ -35,12 +35,12 @@ const ModulesSection = () => (
             }`}
           >
             <div className="flex items-start gap-4">
-              <span className={`font-display text-base md:text-lg tracking-widest mt-0.5 shrink-0 ${m.bonus ? "text-primary" : "text-flora-borgonha"}`}>
+              <span className={`font-cinzel text-base md:text-lg tracking-widest mt-0.5 shrink-0 ${m.bonus ? "text-primary" : "text-flora-borgonha"}`}>
                 {m.bonus ? "🎁" : `0${m.num}`}
               </span>
               <div>
                 <h3 className="font-editorial text-lg text-flora-veludo mb-2">
-                  {m.bonus && <span className="text-primary text-xs font-display tracking-wider mr-2">BÔNUS</span>}
+                  {m.bonus && <span className="text-primary text-xs font-cinzel tracking-wider mr-2">BÔNUS</span>}
                   {m.title}
                 </h3>
                 <p className="font-body text-flora-veludo/85 text-base leading-relaxed">{m.desc}</p>

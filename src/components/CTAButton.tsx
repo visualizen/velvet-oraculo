@@ -32,7 +32,7 @@ const CTAButton = ({ text = "QUERO ENTRAR NO PORTAL", className = "", scrollTo, 
     <>
       <button
         onClick={handleClick}
-        className={`inline-block font-display tracking-[0.2em] text-sm md:text-base font-bold px-10 py-4 bg-primary text-primary-foreground rounded-sm border border-primary/50 hover:bg-primary/90 transition-all duration-300 animate-cta-glow [text-shadow:none] cursor-pointer ${className}`}
+        className={`inline-block font-cinzel tracking-[0.15em] text-sm md:text-base font-bold px-10 py-4 bg-primary text-primary-foreground rounded-sm border border-primary/50 hover:bg-primary/90 transition-all duration-300 animate-cta-glow [text-shadow:none] cursor-pointer ${className}`}
       >
         {text}
       </button>

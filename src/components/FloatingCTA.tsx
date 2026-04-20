@@ -62,7 +62,7 @@ const FloatingCTA = () => {
       aria-label="Iniciar Jornada — ir para seção de preço"
       className={`
         fixed bottom-6 left-1/2 -translate-x-1/2 z-50
-        font-display tracking-[0.15em] text-sm sm:text-base font-bold
+        font-cinzel tracking-[0.15em] text-sm sm:text-base font-bold
         px-8 sm:px-10 py-4 sm:py-5
         bg-primary text-primary-foreground rounded-full
         border border-primary/50

@@ -95,7 +95,7 @@ const HeroSection = () => {
               ✦ Velvet Oráculo ✦
             </p>
             <Ornament className="fade-item mb-6 lg:mb-8" />
-            <h1 className="fade-item font-display text-2xl sm:text-3xl md:text-4xl lg:text-[2.6rem] xl:text-5xl text-foreground leading-[1.15] mb-4 lg:mb-5">
+            <h1 className="fade-item font-cinzel text-2xl sm:text-3xl md:text-4xl lg:text-[2.6rem] xl:text-5xl text-foreground leading-[1.15] mb-4 lg:mb-5">
               Você sente que o tarô te chama, mas ninguém te ensinou a interpretar.
             </h1>
             <p className="fade-item font-editorial italic text-foreground/90 text-base md:text-lg lg:text-xl leading-relaxed mb-3 lg:mb-4 max-w-lg">

@@ -26,7 +26,7 @@ const FinalCTASection = () => (
       {/* Price info */}
       <div className="fade-item space-y-1">
         <p className="font-body text-foreground/80 text-base">
-          Valor completo <span className="line-through text-foreground/40 mr-1">R$3.211</span> → Lançamento: 12x de <span className="text-primary font-display">R$35,68</span> ou R$365 à vista
+          Valor completo <span className="line-through text-foreground/40 mr-1">R$3.211</span> → Lançamento: 12x de <span className="text-primary font-cinzel">R$35,68</span> ou R$365 à vista
         </p>
         <p className="font-body text-foreground/60 text-sm">
           Acesso imediato · Garantia de 7 dias · Preço de lançamento
@@ -34,7 +34,7 @@ const FinalCTASection = () => (
       </div>
 
       <Ornament className="fade-item mt-14 opacity-40" />
-      <p className="fade-item font-display text-xs tracking-[0.3em] text-primary/50 mt-8">
+      <p className="fade-item font-cinzel text-xs tracking-[0.3em] text-primary/50 mt-8">
         ✦ Velvet Oráculo · Tarô Essencial e Simbólico ✦
       </p>
     </div>

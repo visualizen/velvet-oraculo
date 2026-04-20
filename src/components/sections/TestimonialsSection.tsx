@@ -69,7 +69,7 @@ const TestimonialsSection = () => (
     className="py-20 md:py-28"
   >
     <div className="container mx-auto px-6 max-w-5xl">
-      <h2 className="fade-item font-display text-2xl md:text-3xl text-flora-veludo text-center mb-3">
+      <h2 className="fade-item font-cinzel text-2xl md:text-3xl text-flora-veludo text-center mb-3">
         O que a comunidade tem dito
       </h2>
       <p className="fade-item font-editorial italic text-flora-veludo/50 text-sm md:text-base text-center mb-2">

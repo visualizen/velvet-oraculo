@@ -17,10 +17,10 @@ const StickyNav = () => {
     <>
       <nav className="fixed top-0 left-0 right-0 z-50 bg-background/90 backdrop-blur-md border-b border-primary/10 transition-all duration-300">
         <div className="container mx-auto px-6 py-3 flex items-center justify-between">
-          <span className="font-display text-sm tracking-[0.2em] text-primary">VELVET ORÁCULO</span>
+          <span className="font-cinzel text-sm tracking-[0.2em] text-primary">VELVET ORÁCULO</span>
           <button
             onClick={() => setIsModalOpen(true)}
-            className="font-display text-sm tracking-[0.15em] px-6 py-2.5 bg-primary text-primary-foreground rounded-sm hover:bg-primary/90 transition-colors animate-cta-glow cursor-pointer"
+            className="font-cinzel text-sm tracking-[0.15em] px-6 py-2.5 bg-primary text-primary-foreground rounded-sm hover:bg-primary/90 transition-colors animate-cta-glow cursor-pointer"
           >
             QUERO ENTRAR
           </button>
