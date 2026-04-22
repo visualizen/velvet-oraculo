@@ -4,6 +4,19 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ── Desktop typography scale ──
+   On 24"+ monitors (lg), bump base font-size so everything feels natural.
+   Mobile stays at default 16px.                                          */
+html {
+  font-size: 16px;
+}
+@media (min-width: 1024px) {
+  html { font-size: 18px; }
+}
+@media (min-width: 1536px) {
+  html { font-size: 19px; }
+}
+
 @layer base {
   :root {
     --background: 30 30% 10%;

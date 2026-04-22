@@ -1,5 +1,4 @@
 import { useState } from "react";
-import StickyNav from "@/components/StickyNav";
 import HeroSection from "@/components/sections/HeroSection";
 import IdentificationSection from "@/components/sections/IdentificationSection";
 import PromiseSection from "@/components/sections/PromiseSection";
@@ -18,7 +17,6 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <StickyNav />
       <HeroSection />
       <IdentificationSection />
       <BioSection />
