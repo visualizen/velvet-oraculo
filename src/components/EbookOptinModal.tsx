@@ -208,21 +208,30 @@ const EbookOptinModal = ({ isOpen, onClose }: EbookOptinModalProps) => {
     setErrorMessage("");
 
     try {
-      const { error } = await supabase.from("ebook_leads").insert({
-        name,
-        email,
-        whatsapp: whatsapp.replace(/\D/g, ""),
-        ja_tira_taro: jaTiraTaro,
-        nivel: jaTiraTaro ? nivel : null,
-        expectativas,
-      });
+      const { error } = await supabase.from("ebook_leads").upsert(
+        {
+          name,
+          email,
+          whatsapp: whatsapp.replace(/\D/g, ""),
+          ja_tira_taro: jaTiraTaro,
+          nivel: jaTiraTaro ? nivel : null,
+          expectativas,
+        },
+        { onConflict: "email" }
+      );
       if (error) throw error;
 
       setStatus("success");
       animateTransition("forward", () => setStep(3));
     } catch (err: unknown) {
       setStatus("error");
-      if (err instanceof Error && err.message?.includes("duplicate")) {
+      const msg =
+        err instanceof Error
+          ? err.message
+          : typeof err === "object" && err !== null && "message" in err
+            ? String((err as Record<string, unknown>).message)
+            : "";
+      if (msg.includes("duplicate")) {
         setErrorMessage("Este email já está cadastrado.");
       } else {
         setErrorMessage("Algo deu errado. Tente novamente.");
