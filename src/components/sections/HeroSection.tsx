@@ -85,10 +85,10 @@ const HeroSection = () => {
     <TextureSection
       texture="/textures/dark-parchment.jpg"
       overlay="rgba(18,8,8,0.82)"
-      className="min-h-[80vh] lg:min-h-screen flex items-center"
+      className=""
     >
-      <div className="w-full max-w-screen-2xl mx-auto px-6 sm:px-8 lg:px-16 xl:px-24 2xl:px-32 py-10 md:py-16 lg:py-20">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 xl:gap-20 items-center">
+      <div className="w-full max-w-screen-2xl mx-auto px-6 sm:px-8 lg:px-16 xl:px-24 2xl:px-32 min-h-[80vh] lg:min-h-screen flex items-center">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 xl:gap-20 items-center w-full py-10 md:py-16 lg:py-0">
           {/* ─── LEFT: Copy ─── */}
           <div className="text-center lg:text-left flex flex-col items-center lg:items-start text-shadow-dark order-1">
             <p className="fade-item font-editorial italic text-primary text-sm md:text-base tracking-[0.3em] uppercase mb-5">

@@ -38,7 +38,7 @@ const TextureSection = ({ texture, overlay = "rgba(18,8,8,0.6)", children, class
       style={{ backgroundImage: `url(${texture})` }}
     >
       <div className="absolute inset-0" style={{ background: overlay }} />
-      <div className="relative z-10">{children}</div>
+      <div className="relative z-10 w-full">{children}</div>
     </section>
   );
 };
