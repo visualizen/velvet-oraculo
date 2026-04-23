@@ -40,3 +40,5 @@ dist-ssr
 # Video files (hosted on Supabase Storage)
 *.mov
 *.mp4
+.vercel
+.env*.local
