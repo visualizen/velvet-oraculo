@@ -38,6 +38,28 @@ interface EbookOptinModalProps {
   onClose: () => void;
 }
 
+/* ─────────────────────── Image with in-app fallback ─────────────────────── */
+const ImgWithFallback = ({ src, alt, className, fallbackIcon = "🃏" }: {
+  src: string; alt: string; className?: string; fallbackIcon?: string;
+}) => {
+  const [failed, setFailed] = useState(false);
+  if (failed) {
+    return (
+      <div className={`${className} flex items-center justify-center bg-primary/10`}>
+        <span className="text-sm">{fallbackIcon}</span>
+      </div>
+    );
+  }
+  return (
+    <img
+      src={src}
+      alt={alt}
+      className={className}
+      onError={() => setFailed(true)}
+    />
+  );
+};
+
 /* ─────────────────────────── Inline error label ─────────────────────────── */
 const FieldError = ({ msg }: { msg?: string }) => {
   if (!msg) return null;
@@ -224,18 +246,21 @@ const EbookOptinModal = ({ isOpen, onClose }: EbookOptinModalProps) => {
       setStatus("success");
       animateTransition("forward", () => setStep(3));
     } catch (err: unknown) {
-      setStatus("error");
+      console.error("[EbookOptinModal] Submit error:", err);
       const msg =
         err instanceof Error
           ? err.message
           : typeof err === "object" && err !== null && "message" in err
             ? String((err as Record<string, unknown>).message)
             : "";
-      if (msg.includes("duplicate")) {
-        setErrorMessage("Este email já está cadastrado.");
-      } else {
-        setErrorMessage("Algo deu errado. Tente novamente.");
+      // If it's a duplicate key, treat as success (user already registered)
+      if (msg.includes("duplicate") || msg.includes("unique")) {
+        setStatus("success");
+        animateTransition("forward", () => setStep(3));
+        return;
       }
+      setStatus("error");
+      setErrorMessage("Algo deu errado. Tente novamente.");
     }
   };
 
@@ -290,7 +315,7 @@ const EbookOptinModal = ({ isOpen, onClose }: EbookOptinModalProps) => {
               <div className="flex-shrink-0 w-[52px] sm:w-[60px]">
                 <div className="rounded-[6px] bg-[#111] p-[2px] shadow-[0_4px_16px_rgba(201,169,110,0.08)]">
                   <div className="rounded-[5px] overflow-hidden">
-                    <img src="/images/capa-ebook.jpeg" alt="Tarô do Zero em 7 Dias" className="w-full h-auto block" />
+                    <ImgWithFallback src="/images/capa-ebook.jpeg" alt="Tarô do Zero em 7 Dias" className="w-full h-auto block" fallbackIcon="📖" />
                   </div>
                 </div>
               </div>
@@ -354,13 +379,30 @@ const EbookOptinModal = ({ isOpen, onClose }: EbookOptinModalProps) => {
                       <br />
                       <span className="text-foreground/30">Boa jornada com as cartas.</span>
                     </p>
-                    <a
-                      href={EBOOK_PDF_URL}
-                      download="Taro-do-Zero-em-7-Dias.pdf"
-                      className="inline-block font-cinzel tracking-[0.15em] text-[0.7rem] font-bold px-8 py-3 bg-primary text-primary-foreground rounded-sm border border-primary/50 hover:bg-primary/90 hover:translate-y-[-2px] hover:shadow-[0_8px_24px_rgba(201,169,110,0.25)] transition-all duration-500 animate-cta-glow uppercase"
+                    <button
+                      type="button"
+                      onClick={async () => {
+                        try {
+                          // Try fetch + blob for maximum compatibility (works in WebViews)
+                          const response = await fetch(EBOOK_PDF_URL);
+                          const blob = await response.blob();
+                          const url = URL.createObjectURL(blob);
+                          const a = document.createElement("a");
+                          a.href = url;
+                          a.download = "Taro-do-Zero-em-7-Dias.pdf";
+                          document.body.appendChild(a);
+                          a.click();
+                          document.body.removeChild(a);
+                          URL.revokeObjectURL(url);
+                        } catch {
+                          // Fallback: open in new tab (handles restrictive WebViews)
+                          window.open(EBOOK_PDF_URL, "_blank");
+                        }
+                      }}
+                      className="inline-block font-cinzel tracking-[0.15em] text-[0.7rem] font-bold px-8 py-3 bg-primary text-primary-foreground rounded-sm border border-primary/50 hover:bg-primary/90 hover:translate-y-[-2px] hover:shadow-[0_8px_24px_rgba(201,169,110,0.25)] transition-all duration-500 animate-cta-glow uppercase cursor-pointer"
                     >
                       Baixar Ebook
-                    </a>
+                    </button>
                     <p className="font-readable text-foreground/20 text-[10px] mt-4 tracking-wider">
                       O download começará automaticamente
                     </p>
@@ -373,7 +415,7 @@ const EbookOptinModal = ({ isOpen, onClose }: EbookOptinModalProps) => {
                     {/* Step hook */}
                     <div className="mb-5 sm:mb-6 flex items-start gap-3 px-1">
                       <div className="w-8 h-8 rounded-full overflow-hidden flex-shrink-0 mt-0.5">
-                        <img src="/images/capa-ebook.jpeg" alt="" className="w-full h-full object-cover" />
+                        <ImgWithFallback src="/images/capa-ebook.jpeg" alt="" className="w-full h-full object-cover" fallbackIcon="✦" />
                       </div>
                       <div>
                         <p className="font-readable text-primary/50 text-[10px] tracking-[0.15em] uppercase mb-0.5">
