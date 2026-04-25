@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, type FormEvent } from "react";
+import { useState, useEffect, useCallback, useRef, type FormEvent } from "react";
 import { supabase } from "@/lib/supabase";
 
 const EBOOK_PDF_URL = "/taro-do-zero-7-dias.pdf";
@@ -91,6 +91,10 @@ const EbookOptinModal = ({ isOpen, onClose }: EbookOptinModalProps) => {
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [shakeButton, setShakeButton] = useState(false);
 
+  // Auto-redirect countdown
+  const [countdown, setCountdown] = useState(3);
+  const countdownRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
   /* ── Side effects ── */
 
   useEffect(() => {
@@ -111,6 +115,7 @@ const EbookOptinModal = ({ isOpen, onClose }: EbookOptinModalProps) => {
       }, 300);
       return () => clearTimeout(t);
     }
+    setCountdown(3);
   }, [isOpen]);
 
   useEffect(() => {
@@ -121,6 +126,27 @@ const EbookOptinModal = ({ isOpen, onClose }: EbookOptinModalProps) => {
     setNivelVisible(false);
     setNivel("");
   }, [jaTiraTaro]);
+
+  /* ── Auto-redirect countdown on success ── */
+  useEffect(() => {
+    if (step !== 3) return;
+
+    setCountdown(3);
+    countdownRef.current = setInterval(() => {
+      setCountdown((prev) => {
+        if (prev <= 1) {
+          if (countdownRef.current) clearInterval(countdownRef.current);
+          window.open(EBOOK_PDF_URL, "_blank");
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => {
+      if (countdownRef.current) clearInterval(countdownRef.current);
+    };
+  }, [step]);
 
   /* ── Clear individual errors on correction ── */
   const clearError = useCallback((key: string) => {
@@ -368,43 +394,43 @@ const EbookOptinModal = ({ isOpen, onClose }: EbookOptinModalProps) => {
                 {/* ══ Success ══ */}
                 {step === 3 && (
                   <div className="text-center py-6 sm:py-8">
-                    <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-primary/15 flex items-center justify-center">
-                      <span className="text-2xl text-primary">✦</span>
+                    {/* Countdown ring */}
+                    <div className="w-20 h-20 mx-auto mb-5 relative flex items-center justify-center">
+                      <svg className="absolute inset-0 w-full h-full -rotate-90" viewBox="0 0 80 80">
+                        <circle cx="40" cy="40" r="36" fill="none" stroke="currentColor" strokeWidth="2" className="text-primary/10" />
+                        <circle
+                          cx="40" cy="40" r="36" fill="none" stroke="currentColor" strokeWidth="2.5"
+                          className="text-primary/70"
+                          strokeLinecap="round"
+                          strokeDasharray={`${2 * Math.PI * 36}`}
+                          strokeDashoffset={`${2 * Math.PI * 36 * (countdown / 3)}`}
+                          style={{ transition: "stroke-dashoffset 1s linear" }}
+                        />
+                      </svg>
+                      <span className="text-2xl text-primary font-editorial">
+                        {countdown > 0 ? countdown : "✦"}
+                      </span>
                     </div>
                     <h3 className="font-editorial italic text-xl sm:text-2xl text-foreground mb-2">
                       Boas vindas a sua nova jornada!
                     </h3>
                     <p className="font-readable text-foreground/50 text-sm mb-6 leading-relaxed">
-                      Seu guia está pronto para download.
-                      <br />
-                      <span className="text-foreground/30">Boa jornada com as cartas.</span>
+                      {countdown > 0 ? (
+                        <>Abrindo seu guia em <span className="text-primary font-medium">{countdown}s</span>...</>
+                      ) : (
+                        <>Seu guia foi aberto em uma nova aba.<br /><span className="text-foreground/30">Boa jornada com as cartas.</span></>
+                      )}
                     </p>
-                    <button
-                      type="button"
-                      onClick={async () => {
-                        try {
-                          // Try fetch + blob for maximum compatibility (works in WebViews)
-                          const response = await fetch(EBOOK_PDF_URL);
-                          const blob = await response.blob();
-                          const url = URL.createObjectURL(blob);
-                          const a = document.createElement("a");
-                          a.href = url;
-                          a.download = "Taro-do-Zero-em-7-Dias.pdf";
-                          document.body.appendChild(a);
-                          a.click();
-                          document.body.removeChild(a);
-                          URL.revokeObjectURL(url);
-                        } catch {
-                          // Fallback: open in new tab (handles restrictive WebViews)
-                          window.open(EBOOK_PDF_URL, "_blank");
-                        }
-                      }}
-                      className="inline-block font-cinzel tracking-[0.15em] text-[0.7rem] font-bold px-8 py-3 bg-primary text-primary-foreground rounded-sm border border-primary/50 hover:bg-primary/90 hover:translate-y-[-2px] hover:shadow-[0_8px_24px_rgba(201,169,110,0.25)] transition-all duration-500 animate-cta-glow uppercase cursor-pointer"
+                    <a
+                      href={EBOOK_PDF_URL}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-block font-cinzel tracking-[0.15em] text-[0.7rem] font-bold px-8 py-3 bg-primary text-primary-foreground rounded-sm border border-primary/50 hover:bg-primary/90 hover:translate-y-[-2px] hover:shadow-[0_8px_24px_rgba(201,169,110,0.25)] transition-all duration-500 animate-cta-glow uppercase"
                     >
-                      Baixar Ebook
-                    </button>
+                      {countdown > 0 ? "Abrir Agora" : "Abrir Novamente"}
+                    </a>
                     <p className="font-readable text-foreground/20 text-[10px] mt-4 tracking-wider">
-                      O download começará automaticamente
+                      {countdown > 0 ? "Ou clique acima para abrir imediatamente" : "Caso não tenha aberto, clique acima"}
                     </p>
                   </div>
                 )}
