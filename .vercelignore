@@ -1,4 +1,4 @@
-# Root-level large files (not needed in deploy)
+# Root-level large files (/ prefix = root only, won't match inside public/)
 /Capa-ebook.jpeg
 /cartas-fundo.jpeg
 /foto-de-perfil.png
@@ -8,11 +8,9 @@
 /video-landingpage.mp4
 /vídeo-landingpage.mov
 
-# Folders not needed in deploy
-squads
-AUDIT-PLAN.md
-COPY-COMPLETA.md
-NOVA-COPY.md
-
-# Keep public assets (override any accidental matches above)
-!public/**
+# Docs & AI tools (root only)
+/squads
+/AUDIT-PLAN.md
+/COPY-COMPLETA.md
+/NOVA-COPY.md
+/DIARIO_DE_BORDO
