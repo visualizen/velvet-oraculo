@@ -136,7 +136,7 @@ const EbookOptinModal = ({ isOpen, onClose }: EbookOptinModalProps) => {
       setCountdown((prev) => {
         if (prev <= 1) {
           if (countdownRef.current) clearInterval(countdownRef.current);
-          window.open(EBOOK_PDF_URL, "_blank");
+          window.location.href = EBOOK_PDF_URL;
           return 0;
         }
         return prev - 1;
@@ -418,19 +418,17 @@ const EbookOptinModal = ({ isOpen, onClose }: EbookOptinModalProps) => {
                       {countdown > 0 ? (
                         <>Abrindo seu guia em <span className="text-primary font-medium">{countdown}s</span>...</>
                       ) : (
-                        <>Seu guia foi aberto em uma nova aba.<br /><span className="text-foreground/30">Boa jornada com as cartas.</span></>
+                        <>Seu guia está sendo aberto...<br /><span className="text-foreground/30">Boa jornada com as cartas.</span></>
                       )}
                     </p>
                     <a
                       href={EBOOK_PDF_URL}
-                      target="_blank"
-                      rel="noopener noreferrer"
                       className="inline-block font-cinzel tracking-[0.15em] text-[0.7rem] font-bold px-8 py-3 bg-primary text-primary-foreground rounded-sm border border-primary/50 hover:bg-primary/90 hover:translate-y-[-2px] hover:shadow-[0_8px_24px_rgba(201,169,110,0.25)] transition-all duration-500 animate-cta-glow uppercase"
                     >
                       {countdown > 0 ? "Abrir Agora" : "Abrir Novamente"}
                     </a>
                     <p className="font-readable text-foreground/20 text-[10px] mt-4 tracking-wider">
-                      {countdown > 0 ? "Ou clique acima para abrir imediatamente" : "Caso não tenha aberto, clique acima"}
+                      {countdown > 0 ? "Ou clique acima para abrir imediatamente" : "Caso não tenha aberto, toque acima"}
                     </p>
                   </div>
                 )}

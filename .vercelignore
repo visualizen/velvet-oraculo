@@ -1,15 +1,18 @@
-*.mov
-*.mp4
-*.pdf
-Capa-ebook.jpeg
-cartas-fundo.jpeg
-foto-de-perfil.png
-EBOOK 7 DIAS (1).pdf
-flora_brand_guide (1).html
-Designsystem_ebook
+# Root-level large files (not needed in deploy)
+/Capa-ebook.jpeg
+/cartas-fundo.jpeg
+/foto-de-perfil.png
+/EBOOK 7 DIAS (1).pdf
+/flora_brand_guide (1).html
+/Designsystem_ebook
+/video-landingpage.mp4
+/vídeo-landingpage.mov
+
+# Folders not needed in deploy
 squads
 AUDIT-PLAN.md
 COPY-COMPLETA.md
 NOVA-COPY.md
-video-landingpage.mp4
-vídeo-landingpage.mov
+
+# Keep public assets (override any accidental matches above)
+!public/**
