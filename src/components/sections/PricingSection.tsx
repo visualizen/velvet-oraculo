@@ -26,7 +26,7 @@ const communityItems = [
 
 const STACK_TOTAL = 3211;
 const ACTUAL_PRICE = 365;
-const INSTALLMENT_PRICE = "35,68";
+const INSTALLMENT_PRICE = "37,75";
 
 interface PricingSectionProps {
   onOpenCheckout?: () => void;

@@ -470,7 +470,7 @@ const CheckoutModal = ({ isOpen, onClose }: CheckoutModalProps) => {
                 🔒 Seus dados estão protegidos · Pagamento via Kiwify
               </p>
               <p className="font-body text-foreground/25 text-[11px]">
-                12x de R$35,68 · Garantia incondicional de 7 dias
+                12x de R$37,75 · Garantia incondicional de 7 dias
               </p>
             </div>
           </div>
