@@ -2,18 +2,18 @@ import TextureSection from "../TextureSection";
 import Ornament from "../Ornament";
 
 const forYou = [
-  "Você quer aprender tarô de forma profunda, sem precisar decorar listas",
-  "Você já tentou estudar por conta e se frustrou com a quantidade de informação solta",
-  "Você quer usar o tarô como ferramenta real de autoconhecimento",
-  "Você sonha em cobrar por leituras, quando se sentir segura, com ética",
-  "Você valoriza espiritualidade com profundidade, não misticismo vazio",
+  "Você quer se conhecer de verdade — não com frases de efeito, mas com profundidade",
+  "Você se interessa por conhecimento simbólico, filosófico e intelectual",
+  "Você busca autonomia: quer interpretar as cartas por conta própria, sem depender de ninguém",
+  "Você já tentou estudar tarô sozinha e se frustrou com tanta informação solta",
+  "Você valoriza espiritualidade com consistência, não misticismo superficial",
 ];
 
 const notForYou = [
-  "Você quer prever o futuro de outras pessoas",
+  "Você quer criar dependência das cartas para tomar decisões no lugar de você",
+  "Você busca respostas prontas — do tipo 'ele vai voltar?' ou 'vou passar no concurso?'",
   "Você quer decorar 78 cartas em 30 dias e começar a cobrar amanhã",
-  "Você busca rituais de magia, amarrações ou trabalhos específicos",
-  "Você não está disposta a praticar. O tarô se aprende fazendo",
+  "Você não está disposta a praticar. O tarô se aprende fazendo, não assistindo",
 ];
 
 const ForWhomSection = () => (

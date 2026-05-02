@@ -106,7 +106,7 @@ const EbookHero = ({ onOpenModal }: EbookHeroProps) => (
             ✦ Velvet Oráculo ✦
           </p>
 
-          <h1 className="fade-item font-editorial text-[1.75rem] sm:text-[2.25rem] md:text-5xl text-foreground leading-[1.08] mb-2 sm:mb-3">
+          <h1 className="fade-item font-editorial text-[2.625rem] sm:text-[3.375rem] md:text-7xl text-foreground leading-[1.05] mb-3 sm:mb-4">
             Tarô{" "}
             <em className="text-primary" style={{ fontStyle: "italic" }}>
               do Zero
@@ -115,15 +115,16 @@ const EbookHero = ({ onOpenModal }: EbookHeroProps) => (
             em 7 Dias
           </h1>
 
-          <p className="fade-item font-italianno text-xl sm:text-2xl md:text-3xl text-primary/80 mb-4 sm:mb-5">
+          <p className="fade-item font-italianno text-2xl sm:text-3xl md:text-4xl text-primary/80 mb-5 sm:mb-6">
             Da primeira carta à leitura completa
           </p>
 
           <Ornament className="fade-item mb-4 sm:mb-6 lg:mx-0 mx-auto opacity-40" />
 
-          <p className="fade-item font-readable text-foreground/60 text-[0.85rem] sm:text-[0.9rem] leading-[1.75] mb-5 sm:mb-6 tracking-[0.005em]">
-            Um guia honesto para começar a ler as cartas com confiança
-            e as primeiras perguntas certas para fazer ao oráculo.
+          <p className="fade-item font-readable text-foreground/65 text-[0.92rem] sm:text-base leading-[1.85] mb-6 sm:mb-8 tracking-[0.01em]">
+            Um guia honesto para começar a ler as cartas com confiança e as primeiras perguntas certas para fazer ao oráculo.
+          </p>
+          <p className="fade-item font-readable text-foreground/45 text-[0.85rem] sm:text-[0.92rem] leading-[1.8] mb-6 sm:mb-8 italic">
             Sem decorar significados, sem misticismo vazio.
           </p>
 
@@ -136,7 +137,7 @@ const EbookHero = ({ onOpenModal }: EbookHeroProps) => (
             ].map((benefit, i) => (
               <li key={i} className="flex items-start gap-2.5 sm:gap-3">
                 <span className="text-primary text-[10px] sm:text-xs mt-[5px] sm:mt-1 flex-shrink-0">✦</span>
-                <span className="font-readable text-foreground/65 text-[0.82rem] sm:text-[0.88rem] leading-[1.65]">
+                <span className="font-readable text-foreground/65 text-[0.88rem] sm:text-[0.95rem] leading-[1.7]">
                   {benefit}
                 </span>
               </li>

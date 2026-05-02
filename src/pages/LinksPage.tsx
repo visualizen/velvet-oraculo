@@ -6,7 +6,7 @@ import Ornament from "@/components/Ornament";
 const links = [
   {
     label: "Curso: Tarô Essencial e Simbólico",
-    description: "8 módulos · 7 apostilas · Comunidade exclusiva",
+    description: "8 módulos · 7 apostilas · Acesso vitalício",
     icon: "🃏",
     href: "/",
     isInternal: true,

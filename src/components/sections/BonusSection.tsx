@@ -9,24 +9,13 @@ const bonuses = [
   },
   {
     icon: "🎬",
-    title: "4 Masterclasses Avançadas",
+    title: "3 Masterclasses Avançadas",
     desc: null, // Uses custom list below
     topics: [
-      { bold: "Tarô e Relacionamentos:", text: "como ler consultas de amor sem virar dependência" },
       { bold: "Tarô Profissional:", text: "como começar a atender com confiança" },
       { bold: "Tarô em Momentos de Crise:", text: "perguntas difíceis e acolhimento" },
       { bold: "Perguntas Sensíveis:", text: "o que responder, o que redirecionar, o que recusar" },
     ],
-  },
-  {
-    icon: "🌙",
-    title: "Comunidade Exclusiva",
-    desc: "Acesso ao grupo fechado de pessoas que levam espiritualidade, autoconhecimento e estética a sério. Um espaço para praticar, compartilhar leituras e crescer junto.",
-  },
-  {
-    icon: "🗝️",
-    title: "Ritual de Iniciação com o Baralho",
-    desc: "Um guia completo para criar seu primeiro vínculo com o baralho: limpeza energética, ritual de apresentação e exercício de primeiro contato.",
   },
 ];
 
@@ -52,7 +41,7 @@ const BonusSection = () => (
             ) : (
               <div className="space-y-2.5">
                 <p className="font-body text-foreground/70 text-sm leading-relaxed mb-3">
-                  Aulas bônus já gravadas sobre os 4 temas que a comunidade mais pede:
+                  Aulas bônus já gravadas sobre os 3 temas mais pedidos pelas alunas:
                 </p>
                 {b.topics?.map((t, j) => (
                   <p key={j} className="font-body text-foreground/90 text-sm leading-relaxed pl-3 border-l-2 border-primary/20">

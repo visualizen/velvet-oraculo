@@ -14,7 +14,7 @@ const faqs = [
   { q: "Preciso ter um baralho para começar?", a: "Recomendamos ter um baralho Rider-Waite-Smith para acompanhar o curso, mas não é obrigatório para iniciar. No próprio curso indicamos onde adquirir." },
   { q: "O curso serve para quem quer atender profissionalmente?", a: "Sim. O Módulo 7 aborda ética, bloqueios e leitura responsável, tudo que você precisa para atender com confiança e credibilidade. Mas esse curso não força ninguém a virar profissional: muita aluna faz só para si mesma, e isso está perfeito." },
   { q: "E se eu não gostar do curso?", a: "Você tem 7 dias de garantia incondicional. Se sentir que não é para você, devolvemos 100% do investimento, sem perguntas." },
-  { q: "As aulas bônus são gravadas?", a: "Sim. As 4 Masterclasses Avançadas, a Aula Aberta do Bônus Especial e o Ritual de Iniciação ficam disponíveis na área de membros para você assistir quando quiser." },
+  { q: "As aulas bônus são gravadas?", a: "Sim. As 3 Masterclasses Avançadas e a Aula Aberta do Bônus Especial ficam disponíveis na área de membros para você assistir quando quiser." },
 ];
 
 const FAQSection = () => (

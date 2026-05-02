@@ -15,16 +15,11 @@ const courseItems = [
 
 const bonusItems = [
   { name: "7 Apostilas Completas (124 páginas)", value: 197 },
-  { name: "4 Masterclasses Avançadas", value: 297 },
-  { name: "Ritual de Iniciação com o Baralho", value: 97 },
+  { name: "3 Masterclasses Avançadas", value: 297 },
   { name: "Aula Aberta: A Jornada do Louco", value: 147 },
 ];
 
-const communityItems = [
-  { name: "Comunidade exclusiva (acesso vitalício)", value: 197 },
-];
-
-const STACK_TOTAL = 3211;
+const STACK_TOTAL = 2917;
 const ACTUAL_PRICE = 365;
 const INSTALLMENT_PRICE = "37,75";
 
@@ -87,8 +82,6 @@ const PricingSection = ({ onOpenCheckout }: PricingSectionProps) => {
           <GroupLabel title="Materiais e bônus" />
           {bonusItems.map((item, i) => <ValueRow key={i} {...item} />)}
 
-          <GroupLabel title="Comunidade" />
-          {communityItems.map((item, i) => <ValueRow key={i} {...item} />)}
 
           {/* Total */}
           <div className="flex items-center justify-between gap-4 px-3 py-3 mt-4 border-t-2 border-primary/25">
