@@ -26,7 +26,7 @@ const FinalCTASection = () => (
       {/* Price info */}
       <div className="fade-item space-y-1">
         <p className="font-body text-foreground/80 text-base">
-          Valor completo <span className="line-through text-foreground/40 mr-1">R$2.917</span> → Lançamento: 12x de <span className="text-primary font-cinzel">R$37,75</span> ou R$365 à vista
+          Valor completo <span className="line-through text-foreground/40 mr-1">R$2.917</span> → Lançamento: 12x de <span className="text-primary font-cinzel">R$27,67</span> ou R$270 à vista
         </p>
         <p className="font-body text-foreground/60 text-sm">
           Acesso imediato · Garantia de 7 dias · Preço de lançamento
