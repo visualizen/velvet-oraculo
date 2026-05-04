@@ -21,7 +21,7 @@ const bonusItems = [
 
 const STACK_TOTAL = 2917;
 const ACTUAL_PRICE = 270;
-const INSTALLMENT_PRICE = "27,67";
+const INSTALLMENT_PRICE = "27,92";
 
 interface PricingSectionProps {
   onOpenCheckout?: () => void;
