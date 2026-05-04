@@ -9,7 +9,7 @@ import {
 
 const faqs = [
   { q: "Preciso ter conhecimento prévio de tarô?", a: "Não. O curso começa do absoluto zero. O Módulo 1 é especificamente projetado para quem nunca teve contato com tarô." },
-  { q: "Quanto tempo preciso dedicar por semana?", a: "Cada aula tem em média 15 minutos. Se você assistir duas aulas por semana e praticar, completa o curso em cerca de 2 meses. Mas o acesso é vitalício — você faz no seu ritmo, pausa quando quiser, volta quando for o momento certo." },
+  { q: "Quanto tempo preciso dedicar por semana?", a: "Cada aula tem em média 15 minutos. Se você assistir duas aulas por semana e praticar, completa o curso em cerca de 2 meses. Mas o acesso é vitalício: você faz no seu ritmo, pausa quando quiser, volta quando for o momento certo." },
   { q: "Por quanto tempo terei acesso ao curso?", a: "O acesso é vitalício. Você pode assistir e reassistir quantas vezes quiser, no seu ritmo." },
   { q: "Preciso ter um baralho para começar?", a: "Recomendamos ter um baralho Rider-Waite-Smith para acompanhar o curso, mas não é obrigatório para iniciar. No próprio curso indicamos onde adquirir." },
   { q: "O curso serve para quem quer atender profissionalmente?", a: "Sim. O Módulo 7 aborda ética, bloqueios e leitura responsável, tudo que você precisa para atender com confiança e credibilidade. Mas esse curso não força ninguém a virar profissional: muita aluna faz só para si mesma, e isso está perfeito." },

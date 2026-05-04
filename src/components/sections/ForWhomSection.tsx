@@ -2,7 +2,7 @@ import TextureSection from "../TextureSection";
 import Ornament from "../Ornament";
 
 const forYou = [
-  "Você quer se conhecer de verdade — não com frases de efeito, mas com profundidade",
+  "Você quer se conhecer de verdade, não com frases de efeito, mas com profundidade",
   "Você se interessa por conhecimento simbólico, filosófico e intelectual",
   "Você busca autonomia: quer interpretar as cartas por conta própria, sem depender de ninguém",
   "Você já tentou estudar tarô sozinha e se frustrou com tanta informação solta",
@@ -11,7 +11,7 @@ const forYou = [
 
 const notForYou = [
   "Você quer criar dependência das cartas para tomar decisões no lugar de você",
-  "Você busca respostas prontas — do tipo 'ele vai voltar?' ou 'vou passar no concurso?'",
+  "Você busca respostas prontas, do tipo 'ele vai voltar?' ou 'vou passar no concurso?'",
   "Você quer decorar 78 cartas em 30 dias e começar a cobrar amanhã",
   "Você não está disposta a praticar. O tarô se aprende fazendo, não assistindo",
 ];

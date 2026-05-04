@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Cinzel:wght@400;500;600;700&family=Italianno&family=Pinyon+Script&family=IM+Fell+English:ital@0;1&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=Inter:wght@300;400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500&family=Crimson+Text:ital,wght@0,400;0,600;0,700;1,400&family=Lora:ital,wght@0,400;0,500;0,600;1,400;1,500&family=EB+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Cinzel:wght@400;500;600;700&family=Cinzel+Decorative:wght@400;700;900&family=Italianno&family=Pinyon+Script&family=Inter:wght@300;400;500;600&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -77,7 +77,14 @@ html {
 
   body {
     @apply bg-background text-foreground;
+    font-family: 'Crimson Text', 'EB Garamond', Georgia, serif;
+    line-height: 1.7;
+  }
+
+  h1, h2, h3 {
     font-family: 'Cormorant Garamond', serif;
+    font-weight: 400;
+    line-height: 1.25;
   }
 }
 
@@ -91,11 +98,11 @@ html {
   }
 
   .font-editorial {
-    font-family: 'IM Fell English', serif;
+    font-family: 'Lora', 'EB Garamond', serif;
   }
 
   .font-body {
-    font-family: 'Cormorant Garamond', serif;
+    font-family: 'Crimson Text', 'EB Garamond', Georgia, serif;
   }
 
   .font-italianno {
@@ -103,7 +110,7 @@ html {
   }
 
   .font-cinzel {
-    font-family: 'Cinzel', serif;
+    font-family: 'Cormorant Garamond', serif;
   }
 
   .font-readable {

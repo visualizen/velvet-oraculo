@@ -3,14 +3,14 @@ import Ornament from "../Ornament";
 import CTAButton from "../CTAButton";
 
 const courseItems = [
-  { name: "Módulo 1 — O que é o Tarô", value: 197 },
-  { name: "Módulo 2 — Arcanos Maiores: Jornada da Alma", value: 397 },
-  { name: "Módulo 3 — Numerologia do Tarô", value: 197 },
-  { name: "Módulo 4 — Arcanos Menores (Elementos e Naipes)", value: 297 },
-  { name: "Módulo 5 — Simbologia do Tarô", value: 297 },
-  { name: "Módulo 6 — Tiragens na Prática", value: 197 },
-  { name: "Módulo 7 — Ética e Leitura Responsável", value: 197 },
-  { name: "Módulo Bônus — Tarô & Cabala", value: 297 },
+  { name: "Módulo 1: O que é o Tarô", value: 197 },
+  { name: "Módulo 2: Arcanos Maiores, Jornada da Alma", value: 397 },
+  { name: "Módulo 3: Numerologia do Tarô", value: 197 },
+  { name: "Módulo 4: Arcanos Menores (Elementos e Naipes)", value: 297 },
+  { name: "Módulo 5: Simbologia do Tarô", value: 297 },
+  { name: "Módulo 6: Tiragens na Prática", value: 197 },
+  { name: "Módulo 7: Ética e Leitura Responsável", value: 197 },
+  { name: "Módulo Bônus: Tarô & Cabala", value: 297 },
 ];
 
 const bonusItems = [
@@ -55,7 +55,7 @@ const PricingSection = ({ onOpenCheckout }: PricingSectionProps) => {
 
         {/* Section title */}
         <p className="fade-item font-editorial italic text-primary text-sm tracking-[0.3em] uppercase mb-4">
-          ✦ Preço de lançamento — primeira turma ✦
+          ✦ Preço de lançamento · primeira turma ✦
         </p>
         <h2 className="fade-item font-cinzel text-2xl md:text-3xl lg:text-4xl text-foreground mb-3 leading-tight">
           Sua jornada do básico ao avançado
