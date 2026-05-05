@@ -1,22 +1,16 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import TextureSection from "@/components/TextureSection";
 import Ornament from "@/components/Ornament";
 
+const WHATSAPP_DISPLAY = "(47) 99177-0604";
 const WHATSAPP_NUMBER = "5547991770604";
-const CHECKOUT_MSG = encodeURIComponent(
-  "Oi! Quero garantir minha vaga no Velvet Oráculo ✨\n\nhttps://pay.kiwify.com.br/GBx9stV"
-);
-const WHATSAPP_CHECKOUT_URL = `https://wa.me/${WHATSAPP_NUMBER}?text=${CHECKOUT_MSG}`;
+const KIWIFY_URL = "https://pay.kiwify.com.br/GBx9stV";
+
+const isTikTokBrowser = () =>
+  /BytedanceWebview|BytedanceMicroApp|TikTok|musical_ly/i.test(navigator.userAgent);
 
 const links = [
-  {
-    label: "COMPRAR CURSO",
-    description: "Garanta sua vaga com valor de lançamento",
-    icon: "✨",
-    href: WHATSAPP_CHECKOUT_URL,
-    isInternal: false,
-  },
   {
     label: "Curso: Tarô Essencial e Simbólico",
     description: "8 módulos · 7 apostilas · Acesso vitalício",
@@ -40,11 +34,72 @@ const links = [
   },
 ];
 
+const TikTokCheckoutCard = () => {
+  const [copied, setCopied] = useState(false);
+
+  const handleCopy = () => {
+    navigator.clipboard.writeText(WHATSAPP_NUMBER).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2500);
+    });
+  };
+
+  return (
+    <div className="w-full rounded-sm border border-primary/40 bg-primary/[0.06] p-5 space-y-4">
+      <div className="text-center">
+        <p className="font-cinzel text-foreground text-sm tracking-wide leading-snug">
+          COMPRAR CURSO
+        </p>
+        <p className="font-body text-foreground/50 text-sm mt-1">
+          O TikTok não permite abrir o WhatsApp diretamente.
+        </p>
+      </div>
+
+      <div className="space-y-2 text-center">
+        <p className="font-body text-foreground/60 text-xs uppercase tracking-widest">
+          Copie o número e chame no WhatsApp
+        </p>
+        <div className="flex items-center justify-center gap-3 bg-white/[0.04] border border-primary/20 rounded-sm px-4 py-3">
+          <span className="font-cinzel text-primary text-lg tracking-wider">
+            {WHATSAPP_DISPLAY}
+          </span>
+          <button
+            onClick={handleCopy}
+            className="flex-shrink-0 text-xs font-cinzel tracking-wider px-3 py-1.5 rounded-sm border transition-all duration-300 cursor-pointer"
+            style={{
+              borderColor: copied ? "rgba(201,169,110,0.8)" : "rgba(201,169,110,0.3)",
+              color: copied ? "rgb(201,169,110)" : "rgba(201,169,110,0.6)",
+              background: copied ? "rgba(201,169,110,0.1)" : "transparent",
+            }}
+          >
+            {copied ? "COPIADO ✓" : "COPIAR"}
+          </button>
+        </div>
+        <p className="font-body text-foreground/30 text-xs">
+          Depois de copiar, abra o WhatsApp e envie mensagem para esse número
+        </p>
+      </div>
+
+      <div className="border-t border-primary/10 pt-3 text-center">
+        <p className="font-body text-foreground/30 text-xs">
+          Ou acesse direto:{" "}
+          <span className="text-primary/50 font-mono text-[11px]">{KIWIFY_URL}</span>
+        </p>
+      </div>
+    </div>
+  );
+};
+
 const LinksPage = () => {
+  const [inTikTok, setInTikTok] = useState(false);
+
   useEffect(() => {
     document.title = "Velvet Oráculo · Links";
+    setInTikTok(isTikTokBrowser());
     return () => { document.title = "Curso de Tarot Online · Do Básico ao Avançado · Velvet Oráculo"; };
   }, []);
+
+  const waLink = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent("Oi! Quero garantir minha vaga no Velvet Oráculo ✨")}`;
 
   return (
   <TextureSection
@@ -78,11 +133,35 @@ const LinksPage = () => {
 
       {/* Links */}
       <div className="w-full space-y-3 sm:space-y-4">
-        {links.map((link, index) => {
-          const content = (
+        {/* Checkout card — adapts to context */}
+        {inTikTok ? (
+          <TikTokCheckoutCard />
+        ) : (
+          <a
+            href={waLink}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="block"
+          >
+            <div className="group w-full flex items-center gap-3 sm:gap-4 px-4 sm:px-5 py-3.5 sm:py-4 rounded-sm border border-primary/20 bg-white/[0.03] backdrop-blur-sm hover:border-primary/50 hover:bg-white/[0.06] hover:shadow-[0_0_25px_rgba(201,169,110,0.15)] transition-all duration-500 cursor-pointer">
+              <span className="text-2xl sm:text-3xl flex-shrink-0 group-hover:scale-110 transition-transform duration-300">✨</span>
+              <div className="flex-1 min-w-0">
+                <p className="font-cinzel text-foreground text-sm sm:text-base md:text-lg leading-tight tracking-wide">COMPRAR CURSO</p>
+                <p className="font-body text-foreground/50 text-sm sm:text-base mt-0.5">Garanta sua vaga com valor de lançamento</p>
+              </div>
+              <svg className="w-4 h-4 text-primary/50 group-hover:text-primary group-hover:translate-x-1 transition-all duration-300 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+              </svg>
+            </div>
+          </a>
+        )}
+
+        {/* Internal links */}
+        {links.map((link, index) => (
+          <Link key={index} to={link.href} className="block">
             <div
               className="group w-full flex items-center gap-3 sm:gap-4 px-4 sm:px-5 py-3.5 sm:py-4 rounded-sm border border-primary/20 bg-white/[0.03] backdrop-blur-sm hover:border-primary/50 hover:bg-white/[0.06] hover:shadow-[0_0_25px_rgba(201,169,110,0.15)] transition-all duration-500 cursor-pointer"
-              style={{ animationDelay: `${index * 0.15}s` }}
+              style={{ animationDelay: `${(index + 1) * 0.15}s` }}
             >
               <span className="text-2xl sm:text-3xl flex-shrink-0 group-hover:scale-110 transition-transform duration-300">
                 {link.icon}
@@ -105,28 +184,8 @@ const LinksPage = () => {
                 <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
               </svg>
             </div>
-          );
-
-          if (link.isInternal) {
-            return (
-              <Link key={index} to={link.href} className="block">
-                {content}
-              </Link>
-            );
-          }
-
-          return (
-            <a
-              key={index}
-              href={link.href}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="block"
-            >
-              {content}
-            </a>
-          );
-        })}
+          </Link>
+        ))}
       </div>
 
       {/* Footer */}
