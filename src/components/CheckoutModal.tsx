@@ -3,7 +3,6 @@ import { createPortal } from "react-dom";
 import Ornament from "./Ornament";
 import { supabase } from "@/lib/supabase";
 
-const KIWIFY_CHECKOUT_URL = "https://pay.kiwify.com.br/GBx9stV";
 const WHATSAPP_NUMBER = "5547991770604";
 
 const isTikTokBrowser = () =>
@@ -134,19 +133,11 @@ const CheckoutModal = ({ isOpen, onClose }: CheckoutModalProps) => {
       source: "sales-page-cta",
     };
 
-    // Build Kiwify checkout URL with pre-populated fields (sent via WhatsApp)
-    const params = new URLSearchParams({
-      name: lead.name,
-      email: lead.email,
-      phone: lead.phone,
-    });
-    const checkoutUrl = `${KIWIFY_CHECKOUT_URL}?${params.toString()}`;
-
     // Save lead (non-blocking)
     saveLead(lead);
 
-    // Build WhatsApp message
-    const msg = `Oi! Sou ${lead.name} e quero garantir minha vaga no Velvet Oráculo ✨\n\nMeu link de checkout:\n${checkoutUrl}`;
+    // Keep message short — long URLs inside wa.me text= get silently truncated
+    const msg = `Oi! Sou ${lead.name} e quero garantir minha vaga no Velvet Oráculo ✨`;
 
     const waMe = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`;
     const deepLink = `whatsapp://send?phone=${WHATSAPP_NUMBER}&text=${encodeURIComponent(msg)}`;
