@@ -5,14 +5,7 @@ import { supabase } from "@/lib/supabase";
 
 const KIWIFY_CHECKOUT_URL = "https://pay.kiwify.com.br/GBx9stV";
 
-/**
- * Detect if we're inside an in-app browser (TikTok, Instagram, Facebook, etc.)
- * These browsers restrict window.open and sometimes even window.location redirects.
- */
-const isInAppBrowser = (): boolean => {
-  const ua = navigator.userAgent || navigator.vendor || "";
-  return /TikTok|Instagram|FBAN|FBAV|Line\//i.test(ua);
-};
+
 
 interface CheckoutModalProps {
   isOpen: boolean;
@@ -35,13 +28,9 @@ const CheckoutModal = ({ isOpen, onClose }: CheckoutModalProps) => {
   const [phone, setPhone] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
-  // State to show the in-app browser redirect screen
-  const [inAppRedirectUrl, setInAppRedirectUrl] = useState("");
-  const [copied, setCopied] = useState(false);
   const [touched, setTouched] = useState<Record<string, boolean>>({});
   const nameRef = useRef<HTMLInputElement>(null);
   const cardRef = useRef<HTMLDivElement>(null);
-  const anchorRef = useRef<HTMLAnchorElement>(null);
 
   // Reset all fields when modal closes
   const resetForm = useCallback(() => {
@@ -49,8 +38,6 @@ const CheckoutModal = ({ isOpen, onClose }: CheckoutModalProps) => {
     setEmail("");
     setPhone("");
     setError("");
-    setInAppRedirectUrl("");
-    setCopied(false);
     setTouched({});
     setIsSubmitting(false);
   }, []);
@@ -147,41 +134,8 @@ const CheckoutModal = ({ isOpen, onClose }: CheckoutModalProps) => {
     // Save lead (non-blocking)
     saveLead(lead);
 
-    // === Redirect strategy ===
-    // In-app browsers (TikTok, Instagram, etc.) block JS-initiated cross-domain
-    // redirects and show interstitial "copy & paste" warnings.
-    // For these browsers: show a branded transition screen with a native <a> link
-    // (user-tapped links are treated differently) + one-tap copy button.
-    // For normal browsers: redirect directly via window.location.href.
-
-    if (isInAppBrowser()) {
-      // Show the in-app browser redirect screen instead of trying to redirect
-      setInAppRedirectUrl(checkoutUrl);
-      setIsSubmitting(false);
-    } else {
-      // Normal browser: direct redirect
-      window.location.href = checkoutUrl;
-    }
-  };
-
-  const handleCopyLink = async () => {
-    try {
-      await navigator.clipboard.writeText(inAppRedirectUrl);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 3000);
-    } catch {
-      // Fallback for browsers that don't support clipboard API
-      const textArea = document.createElement("textarea");
-      textArea.value = inAppRedirectUrl;
-      textArea.style.position = "fixed";
-      textArea.style.opacity = "0";
-      document.body.appendChild(textArea);
-      textArea.select();
-      document.execCommand("copy");
-      document.body.removeChild(textArea);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 3000);
-    }
+    // Direct redirect
+    window.location.href = checkoutUrl;
   };
 
   // Only close when clicking the actual backdrop, not the card
@@ -202,117 +156,6 @@ const CheckoutModal = ({ isOpen, onClose }: CheckoutModalProps) => {
         ? "border-red-400/60 focus:border-red-400/80 shadow-[0_0_16px_rgba(244,63,94,0.12)]"
         : "border-primary/20 focus:border-primary/50 focus:shadow-[0_0_20px_rgba(201,169,110,0.08)]"
     }`;
-
-  // =========================================================================
-  // IN-APP BROWSER REDIRECT SCREEN
-  // When we detect TikTok/Instagram/etc., show a beautiful branded screen
-  // with a native <a> link the user can tap directly + a copy button.
-  // =========================================================================
-  if (inAppRedirectUrl) {
-    return createPortal(
-      <div
-        className="fixed inset-0 z-[9999] overflow-y-auto"
-        style={{
-          background: "rgba(18, 8, 8, 0.96)",
-          backdropFilter: "blur(12px)",
-        }}
-      >
-        <div className="min-h-full flex items-center justify-center px-4 py-8 sm:py-12">
-          <div
-            ref={cardRef}
-            className="relative w-full max-w-md animate-modal-content rounded-sm border border-primary/25 bg-[#1a1020] shadow-[0_24px_80px_rgba(0,0,0,0.6)]"
-          >
-            <div className="p-6 sm:p-8">
-              {/* Success animation */}
-              <div className="text-center mb-6">
-                <div className="w-16 h-16 mx-auto mb-5 rounded-full border-2 border-primary/40 flex items-center justify-center"
-                  style={{
-                    background: "radial-gradient(circle, rgba(201,169,110,0.15) 0%, transparent 70%)",
-                    animation: "pulse 2s ease-in-out infinite",
-                  }}
-                >
-                  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-primary">
-                    <polyline points="20 6 9 17 4 12" />
-                  </svg>
-                </div>
-                <Ornament className="mb-4 opacity-50" />
-                <h3 className="font-editorial italic text-primary text-xl sm:text-2xl mb-2">
-                  Dados salvos com sucesso
-                </h3>
-                <p className="font-body text-foreground/60 text-sm leading-relaxed mb-1">
-                  Toque no botão abaixo para ir ao checkout seguro
-                </p>
-                <p className="font-body text-foreground/35 text-xs leading-relaxed">
-                  Seu navegador requer um toque extra para prosseguir
-                </p>
-              </div>
-
-              {/* Primary CTA: Native <a> link — in-app browsers treat user taps on <a> differently than JS redirects */}
-              <a
-                ref={anchorRef}
-                href={inAppRedirectUrl}
-                target="_self"
-                rel="noopener"
-                className="block w-full text-center bg-primary text-primary-foreground font-cinzel tracking-[0.15em] text-sm font-bold px-8 py-4 rounded-sm border border-primary/50 hover:bg-primary/90 transition-all duration-500 animate-cta-glow no-underline"
-              >
-                CONTINUAR PARA O CHECKOUT →
-              </a>
-
-              {/* Divider */}
-              <div className="flex items-center gap-3 my-5">
-                <div className="flex-1 h-px bg-primary/10" />
-                <span className="font-body text-foreground/25 text-[10px] tracking-widest uppercase">ou</span>
-                <div className="flex-1 h-px bg-primary/10" />
-              </div>
-
-              {/* Copy link button */}
-              <button
-                type="button"
-                onClick={handleCopyLink}
-                className={`w-full flex items-center justify-center gap-2 font-body text-sm px-6 py-3 rounded-sm border transition-all duration-300 ${
-                  copied
-                    ? "bg-green-500/10 text-green-400 border-green-500/30"
-                    : "bg-white/[0.04] text-foreground/60 border-primary/15 hover:border-primary/30 hover:text-foreground/80"
-                }`}
-              >
-                {copied ? (
-                  <>
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <polyline points="20 6 9 17 4 12" />
-                    </svg>
-                    Link copiado! Cole no navegador
-                  </>
-                ) : (
-                  <>
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
-                      <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
-                    </svg>
-                    Copiar link do checkout
-                  </>
-                )}
-              </button>
-
-              {/* Instruction hint for in-app browsers */}
-              <div className="mt-5 p-3 rounded-sm bg-white/[0.02] border border-primary/8">
-                <p className="font-body text-foreground/40 text-[11px] text-center leading-relaxed">
-                  💡 <span className="text-foreground/50">Dica:</span> Se o botão não funcionar, copie o link e abra no <strong className="text-foreground/60">Safari</strong> ou <strong className="text-foreground/60">Chrome</strong>
-                </p>
-              </div>
-
-              {/* Trust signals */}
-              <div className="mt-4 text-center">
-                <p className="font-body text-foreground/25 text-[11px] tracking-wide">
-                  🔒 Pagamento 100% seguro via Kiwify
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>,
-      document.body
-    );
-  }
 
   // =========================================================================
   // NORMAL FORM SCREEN

@@ -5,6 +5,13 @@ import Ornament from "@/components/Ornament";
 
 const links = [
   {
+    label: "COMPRAR CURSO",
+    description: "Garanta sua vaga com valor de lançamento",
+    icon: "✨",
+    href: "https://pay.kiwify.com.br/GBx9stV",
+    isInternal: false,
+  },
+  {
     label: "Curso: Tarô Essencial e Simbólico",
     description: "8 módulos · 7 apostilas · Acesso vitalício",
     icon: "🃏",
