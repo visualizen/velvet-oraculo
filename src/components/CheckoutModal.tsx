@@ -135,14 +135,24 @@ const CheckoutModal = ({ isOpen, onClose }: CheckoutModalProps) => {
     // Save lead (non-blocking)
     saveLead(lead);
 
-    // Build WhatsApp redirect with pre-filled message
-    const whatsappMessage = encodeURIComponent(
-      `Oi! Sou ${lead.name} e quero garantir minha vaga no Velvet Oráculo ✨\n\nMeu link de checkout:\n${checkoutUrl}`
-    );
-    const whatsappUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${whatsappMessage}`;
+    // Build WhatsApp message
+    const msg = `Oi! Sou ${lead.name} e quero garantir minha vaga no Velvet Oráculo ✨\n\nMeu link de checkout:\n${checkoutUrl}`;
 
-    // Redirect to WhatsApp (bypasses TikTok in-app browser blocking)
-    window.location.href = whatsappUrl;
+    // Try whatsapp:// deep link first (OS-level, bypasses WebView interception)
+    // Then fallback to wa.me, then fallback to direct Kiwify checkout
+    const deepLink = `whatsapp://send?phone=${WHATSAPP_NUMBER}&text=${encodeURIComponent(msg)}`;
+    const waMe = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`;
+
+    // Attempt deep link — if it fails (no WhatsApp), fallback after timeout
+    window.location.href = deepLink;
+    setTimeout(() => {
+      // If we're still here, deep link didn't work — try wa.me
+      window.location.href = waMe;
+    }, 1500);
+    setTimeout(() => {
+      // Last resort — try direct checkout
+      window.location.href = checkoutUrl;
+    }, 3500);
   };
 
   // Only close when clicking the actual backdrop, not the card
