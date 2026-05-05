@@ -3,17 +3,7 @@ import { createPortal } from "react-dom";
 import Ornament from "./Ornament";
 import { supabase } from "@/lib/supabase";
 
-const WHATSAPP_NUMBER = "5547991770604";
-
-const isTikTokBrowser = () =>
-  /BytedanceWebview|BytedanceMicroApp|TikTok|musical_ly/i.test(
-    navigator.userAgent
-  );
-
-const isInstagramBrowser = () =>
-  /Instagram/i.test(navigator.userAgent);
-
-const isInAppBrowser = () => isTikTokBrowser() || isInstagramBrowser();
+const KIWIFY_URL = "https://pay.kiwify.com.br/GBx9stV";
 
 
 
@@ -112,7 +102,7 @@ const CheckoutModal = ({ isOpen, onClose }: CheckoutModalProps) => {
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
     // Mark all fields as touched on submit attempt
@@ -136,30 +126,8 @@ const CheckoutModal = ({ isOpen, onClose }: CheckoutModalProps) => {
     // Save lead (non-blocking)
     saveLead(lead);
 
-    // Keep message short — long URLs inside wa.me text= get silently truncated
-    const msg = `Oi! Sou ${lead.name} e quero garantir minha vaga no Velvet Oráculo ✨`;
-
-    const waMe = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`;
-    const deepLink = `whatsapp://send?phone=${WHATSAPP_NUMBER}&text=${encodeURIComponent(msg)}`;
-
-    if (isInAppBrowser()) {
-      // Inside TikTok/Instagram WebView: wa.me is recognized as a WhatsApp
-      // deep link by the OS and opens the native app, escaping the WebView.
-      // whatsapp:// is blocked by TikTok's WebView sandbox, so skip it.
-      window.location.href = waMe;
-      // Reset submitting state after redirect attempt so user can retry
-      // if they cancel the WhatsApp prompt and return.
-      setTimeout(() => setIsSubmitting(false), 2000);
-      return;
-    }
-
-    // Normal browser: try whatsapp:// first (instant, no browser step),
-    // fall back to wa.me after 1.5s if WhatsApp isn't installed.
-    window.location.href = deepLink;
-    setTimeout(() => {
-      window.location.href = waMe;
-    }, 1500);
-    setTimeout(() => setIsSubmitting(false), 3000);
+    window.location.href = KIWIFY_URL;
+    setTimeout(() => setIsSubmitting(false), 2500);
   };
 
   // Only close when clicking the actual backdrop, not the card
@@ -337,7 +305,7 @@ const CheckoutModal = ({ isOpen, onClose }: CheckoutModalProps) => {
                 🔒 Seus dados estão protegidos
               </p>
               <p className="font-body text-foreground/25 text-[11px]">
-                Você será redirecionada ao WhatsApp para finalizar
+                Você será redirecionada ao checkout para finalizar
               </p>
             </div>
           </div>
