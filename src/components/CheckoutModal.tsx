@@ -4,6 +4,7 @@ import Ornament from "./Ornament";
 import { supabase } from "@/lib/supabase";
 
 const KIWIFY_CHECKOUT_URL = "https://pay.kiwify.com.br/GBx9stV";
+const WHATSAPP_NUMBER = "5547991770604";
 
 
 
@@ -123,7 +124,7 @@ const CheckoutModal = ({ isOpen, onClose }: CheckoutModalProps) => {
       source: "sales-page-cta",
     };
 
-    // Build Kiwify checkout URL with pre-populated fields
+    // Build Kiwify checkout URL with pre-populated fields (sent via WhatsApp)
     const params = new URLSearchParams({
       name: lead.name,
       email: lead.email,
@@ -134,8 +135,14 @@ const CheckoutModal = ({ isOpen, onClose }: CheckoutModalProps) => {
     // Save lead (non-blocking)
     saveLead(lead);
 
-    // Direct redirect
-    window.location.href = checkoutUrl;
+    // Build WhatsApp redirect with pre-filled message
+    const whatsappMessage = encodeURIComponent(
+      `Oi! Sou ${lead.name} e quero garantir minha vaga no Velvet Oráculo ✨\n\nMeu link de checkout:\n${checkoutUrl}`
+    );
+    const whatsappUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${whatsappMessage}`;
+
+    // Redirect to WhatsApp (bypasses TikTok in-app browser blocking)
+    window.location.href = whatsappUrl;
   };
 
   // Only close when clicking the actual backdrop, not the card
@@ -302,7 +309,7 @@ const CheckoutModal = ({ isOpen, onClose }: CheckoutModalProps) => {
                     REDIRECIONANDO...
                   </span>
                 ) : (
-                  "COMEÇAR JORNADA"
+                  "GARANTIR MINHA VAGA"
                 )}
               </button>
             </form>
@@ -310,10 +317,10 @@ const CheckoutModal = ({ isOpen, onClose }: CheckoutModalProps) => {
             {/* Trust signals */}
             <div className="mt-5 text-center space-y-1.5">
               <p className="font-body text-foreground/30 text-[11px] tracking-wide">
-                🔒 Seus dados estão protegidos · Pagamento via Kiwify
+                🔒 Seus dados estão protegidos
               </p>
               <p className="font-body text-foreground/25 text-[11px]">
-                12x de R$27,92 · Garantia incondicional de 7 dias
+                Você será redirecionada ao WhatsApp para finalizar
               </p>
             </div>
           </div>
