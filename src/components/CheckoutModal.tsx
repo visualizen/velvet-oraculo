@@ -6,6 +6,16 @@ import { supabase } from "@/lib/supabase";
 const KIWIFY_CHECKOUT_URL = "https://pay.kiwify.com.br/GBx9stV";
 const WHATSAPP_NUMBER = "5547991770604";
 
+const isTikTokBrowser = () =>
+  /BytedanceWebview|BytedanceMicroApp|TikTok|musical_ly/i.test(
+    navigator.userAgent
+  );
+
+const isInstagramBrowser = () =>
+  /Instagram/i.test(navigator.userAgent);
+
+const isInAppBrowser = () => isTikTokBrowser() || isInstagramBrowser();
+
 
 
 interface CheckoutModalProps {
@@ -138,21 +148,27 @@ const CheckoutModal = ({ isOpen, onClose }: CheckoutModalProps) => {
     // Build WhatsApp message
     const msg = `Oi! Sou ${lead.name} e quero garantir minha vaga no Velvet Oráculo ✨\n\nMeu link de checkout:\n${checkoutUrl}`;
 
-    // Try whatsapp:// deep link first (OS-level, bypasses WebView interception)
-    // Then fallback to wa.me, then fallback to direct Kiwify checkout
-    const deepLink = `whatsapp://send?phone=${WHATSAPP_NUMBER}&text=${encodeURIComponent(msg)}`;
     const waMe = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`;
+    const deepLink = `whatsapp://send?phone=${WHATSAPP_NUMBER}&text=${encodeURIComponent(msg)}`;
 
-    // Attempt deep link — if it fails (no WhatsApp), fallback after timeout
+    if (isInAppBrowser()) {
+      // Inside TikTok/Instagram WebView: wa.me is recognized as a WhatsApp
+      // deep link by the OS and opens the native app, escaping the WebView.
+      // whatsapp:// is blocked by TikTok's WebView sandbox, so skip it.
+      window.location.href = waMe;
+      // Reset submitting state after redirect attempt so user can retry
+      // if they cancel the WhatsApp prompt and return.
+      setTimeout(() => setIsSubmitting(false), 2000);
+      return;
+    }
+
+    // Normal browser: try whatsapp:// first (instant, no browser step),
+    // fall back to wa.me after 1.5s if WhatsApp isn't installed.
     window.location.href = deepLink;
     setTimeout(() => {
-      // If we're still here, deep link didn't work — try wa.me
       window.location.href = waMe;
     }, 1500);
-    setTimeout(() => {
-      // Last resort — try direct checkout
-      window.location.href = checkoutUrl;
-    }, 3500);
+    setTimeout(() => setIsSubmitting(false), 3000);
   };
 
   // Only close when clicking the actual backdrop, not the card

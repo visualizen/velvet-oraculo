@@ -3,40 +3,18 @@ import { Link } from "react-router-dom";
 import TextureSection from "@/components/TextureSection";
 import Ornament from "@/components/Ornament";
 
+const WHATSAPP_NUMBER = "5547991770604";
+const CHECKOUT_MSG = encodeURIComponent(
+  "Oi! Quero garantir minha vaga no Velvet Oráculo ✨\n\nhttps://pay.kiwify.com.br/GBx9stV"
+);
+const WHATSAPP_CHECKOUT_URL = `https://wa.me/${WHATSAPP_NUMBER}?text=${CHECKOUT_MSG}`;
+
 const links = [
-  {
-    label: "🧪 TESTE: Deep Link Safari",
-    description: "x-safari-https://pay.kiwify.com.br",
-    icon: "🧭",
-    href: "x-safari-https://pay.kiwify.com.br/GBx9stV",
-    isInternal: false,
-  },
-  {
-    label: "🧪 TESTE: Intent Chrome (Android)",
-    description: "intent://...#Intent;scheme=https;package=chrome",
-    icon: "🟢",
-    href: "intent://pay.kiwify.com.br/GBx9stV#Intent;scheme=https;package=com.android.chrome;end;",
-    isInternal: false,
-  },
-  {
-    label: "🧪 TESTE: googlechrome:// (Android)",
-    description: "googlechrome://pay.kiwify.com.br",
-    icon: "🔵",
-    href: "googlechrome://navigate?url=https://pay.kiwify.com.br/GBx9stV",
-    isInternal: false,
-  },
-  {
-    label: "🧪 TESTE: WhatsApp Deep Link",
-    description: "whatsapp://send?phone=...",
-    icon: "💬",
-    href: "whatsapp://send?phone=5547991770604&text=Teste%20deep%20link",
-    isInternal: false,
-  },
   {
     label: "COMPRAR CURSO",
     description: "Garanta sua vaga com valor de lançamento",
     icon: "✨",
-    href: "https://pay.kiwify.com.br/GBx9stV",
+    href: WHATSAPP_CHECKOUT_URL,
     isInternal: false,
   },
   {
