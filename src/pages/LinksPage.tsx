@@ -3,20 +3,7 @@ import { Link } from "react-router-dom";
 import TextureSection from "@/components/TextureSection";
 import Ornament from "@/components/Ornament";
 
-const WHATSAPP_NUMBER = "5547991770604";
-const CHECKOUT_MSG = encodeURIComponent(
-  "Oi! Quero garantir minha vaga no Velvet Oráculo ✨\n\nhttps://pay.kiwify.com.br/GBx9stV"
-);
-const WHATSAPP_CHECKOUT_URL = `https://wa.me/${WHATSAPP_NUMBER}?text=${CHECKOUT_MSG}`;
-
 const links = [
-  {
-    label: "COMPRAR CURSO",
-    description: "Garanta sua vaga com valor de lançamento",
-    icon: "✨",
-    href: WHATSAPP_CHECKOUT_URL,
-    isInternal: false,
-  },
   {
     label: "Curso: Tarô Essencial e Simbólico",
     description: "8 módulos · 7 apostilas · Acesso vitalício",
